@@ -7,16 +7,19 @@ const DOWNLOADING = "Downloading lyrics image...";
 const NO_LYRICS_FOUND = "No lyrics found<br>You can still type your own lyrics by clicking here :)";
 const NO_LYRICS_SELECTED = "No lyrics selected<br>You can still type your own lyrics by clicking here :)";
 
-// WARNA BARU - tambah #b5ffc0
+// WARNA
 const COLORS = [
-    "#ffffff",  // Putih
-    "#2e2928",  // Coklat gelap
-    "#ffa9a3",  // Peach/pink muda
-    "#cc0e00",  // Merah
-    "#83b8fc",  // Biru muda
-    "#fcd683",  // Kuning
-    "#b5ffc0",  // Hijau mint (BARU)
+    "#ffffff",
+    "#2e2928",
+    "#ffa9a3",
+    "#cc0e00",
+    "#83b8fc",
+    "#fcd683",
+    "#b5ffc0",
 ];
+
+// TIMEOUT UNTUK REQUEST LIRIK (5 detik)
+const LYRICS_TIMEOUT = 5000;
 
 class DOMHandler {
     constructor(fetcher) {
@@ -25,7 +28,6 @@ class DOMHandler {
         this.selectedSongIndex = null;
         this.usedDirectLink = false;
         this.isLoadingLyrics = false;
-        this.isTranslating = false; // Untuk mencegah spam klik
 
         // DOM Elements
         this.errorTexts = document.querySelectorAll(".error");
@@ -57,9 +59,6 @@ class DOMHandler {
         this.fileInput = document.querySelector(".song-image .file-input");
         this.albumImageWrapper = document.querySelector(".song-image .album-image-wrapper");
         this.screen4AlbumImg = document.querySelector(".song-image .screen4-album-img");
-
-        // Tombol terjemah
-        this.translateButton = document.querySelector("#translate-lyrics");
 
         this.setListeners();
         this.populateColorSelection();
@@ -102,13 +101,6 @@ class DOMHandler {
                 } else {
                     alert("Please select at least one line first!");
                 }
-            });
-        }
-
-        // TOMBOL TERJEMAH - Translate ALL lyrics
-        if (this.translateButton) {
-            this.translateButton.addEventListener("click", () => {
-                this.translateAllLyrics();
             });
         }
 
@@ -173,152 +165,111 @@ class DOMHandler {
                 document.execCommand("insertText", false, text);
             });
         });
-
-        // Dark mode toggle - untuk update tombol translate
-        const checkbox = document.getElementById('theme-toggle-checkbox');
-        if (checkbox) {
-            checkbox.addEventListener('change', function() {
-                // Update tampilan tombol translate
-                const translateBtn = document.querySelector('#translate-lyrics');
-                if (translateBtn) {
-                    const isDark = document.body.classList.contains('dark-mode');
-                    if (isDark) {
-                        translateBtn.classList.add('dark-translate');
-                        translateBtn.classList.remove('light-translate');
-                    } else {
-                        translateBtn.classList.remove('dark-translate');
-                        translateBtn.classList.add('light-translate');
-                    }
-                }
-            });
-        }
-
-        // Initial theme untuk tombol translate
-        setTimeout(() => {
-            const translateBtn = document.querySelector('#translate-lyrics');
-            if (translateBtn) {
-                const isDark = document.body.classList.contains('dark-mode');
-                if (isDark) {
-                    translateBtn.classList.add('dark-translate');
-                } else {
-                    translateBtn.classList.add('light-translate');
-                }
-            }
-        }, 100);
     }
 
-    // FUNGSI TERJEMAH SEMUA LIRIK
-    async translateAllLyrics() {
-        // Cegah spam klik
-        if (this.isTranslating) return;
-        this.isTranslating = true;
+    // ========== FIND LYRICS DENGAN FALLBACK GOOGLE ==========
+    async findLyrics() {
+        if (this.isLoadingLyrics) return;
+        this.isLoadingLyrics = true;
 
-        const allLines = document.querySelectorAll(".select-line");
-        
-        if (allLines.length === 0) {
-            alert("No lyrics to translate!");
-            this.isTranslating = false;
+        this.lineSelection.innerHTML = "";
+        this.displayScreen(3);
+        this.displaySongInfo();
+        this.displaySearching(SEARCHING_FOR_LYRICS);
+
+        const song = this.songs[this.selectedSongIndex];
+        const artists = song.artists.map(a => a.name);
+        let lyrics = null;
+
+        try {
+            // Coba dengan artist pertama
+            const firstArtist = artists[0];
+            if (firstArtist) {
+                try {
+                    const result = await this.fetchWithTimeout(
+                        this.fetcher.getSongLyrics(firstArtist, song.name),
+                        LYRICS_TIMEOUT
+                    );
+                    if (result && result.plainLyrics) {
+                        lyrics = result;
+                    }
+                } catch (e) {
+                    console.log(`First artist "${firstArtist}" not found, trying others...`);
+                }
+            }
+
+            // Jika tidak ditemukan, coba artist lain
+            if (!lyrics && artists.length > 1) {
+                const remainingArtists = artists.slice(1);
+                const promises = remainingArtists.map(artist => 
+                    this.fetchWithTimeout(
+                        this.fetcher.getSongLyrics(artist, song.name),
+                        LYRICS_TIMEOUT
+                    ).catch(() => null)
+                );
+                
+                const results = await Promise.all(promises);
+                for (const result of results) {
+                    if (result && result.plainLyrics) {
+                        lyrics = result;
+                        break;
+                    }
+                }
+            }
+
+            if (lyrics === null) throw Error("Lyrics not found");
+            
+        } catch (error) {
+            console.error("Lyrics fetch error:", error);
+            this.hideSearching();
+            this.isLoadingLyrics = false;
+            
+            // Tampilkan pesan tidak ada lirik
+            const noLyricsMsg = document.createElement("div");
+            noLyricsMsg.classList.add("no-lyrics-message");
+            noLyricsMsg.innerHTML = "❌ No lyrics found.<br>You can type your own lyrics in the next step.";
+            noLyricsMsg.style.padding = "20px";
+            noLyricsMsg.style.textAlign = "center";
+            noLyricsMsg.style.fontSize = "0.9rem";
+            noLyricsMsg.style.color = "var(--text-gray)";
+            this.lineSelection.append(noLyricsMsg);
+            
+            song.lyrics = [];
+            this.isLoadingLyrics = false;
             return;
         }
 
-        const translateBtn = this.translateButton;
-        const originalHTML = translateBtn.innerHTML;
-        
-        // Tampilkan loading
-        translateBtn.innerHTML = `<span class="material-symbols-outlined">sync</span> Translating...`;
-        translateBtn.disabled = true;
-        translateBtn.style.opacity = '0.7';
-
-        try {
-            // Kumpulkan SEMUA teks lirik
-            const texts = Array.from(allLines).map(line => line.textContent.trim());
-            const validTexts = texts.filter(text => text.length > 0);
-            
-            if (validTexts.length === 0) {
-                alert("No lyrics to translate!");
-                this.isTranslating = false;
-                translateBtn.innerHTML = originalHTML;
-                translateBtn.disabled = false;
-                translateBtn.style.opacity = '1';
-                return;
-            }
-            
-            // Gabungkan semua lirik
-            const fullText = validTexts.join('\n');
-            
-            // Panggil API terjemahan
-            const translated = await this.translateText(fullText);
-            
-            // Split hasil terjemahan per baris
-            const translatedLines = translated.split('\n');
-            
-            // Update SEMUA line dengan terjemahan
-            let lineIndex = 0;
-            allLines.forEach((line) => {
-                const text = line.textContent.trim();
-                if (text.length > 0 && lineIndex < translatedLines.length) {
-                    // Simpan teks asli di data attribute (hanya jika belum ada)
-                    if (!line.dataset.original) {
-                        line.dataset.original = text;
-                    }
-                    line.textContent = translatedLines[lineIndex] || text;
-                    line.classList.add('translated');
-                    lineIndex++;
-                }
-            });
-
-            // Tampilkan notifikasi sukses
-            translateBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Translated!`;
-            translateBtn.style.opacity = '1';
-            translateBtn.disabled = false;
-            
-            setTimeout(() => {
-                translateBtn.innerHTML = originalHTML;
-                this.isTranslating = false;
-            }, 2000);
-
-        } catch (error) {
-            console.error("Translation error:", error);
-            alert("Failed to translate lyrics. Please try again.");
-            translateBtn.innerHTML = originalHTML;
-            translateBtn.disabled = false;
-            translateBtn.style.opacity = '1';
-            this.isTranslating = false;
-        }
+        this.hideSearching();
+        this.isLoadingLyrics = false;
+        song.loadLyrics(lyrics);
+        this.populateLineSelection();
     }
 
-    // FUNGSI TERJEMAH KE BAHASA INGGRIS
-    async translateText(text) {
-        // Gunakan LibreTranslate API (gratis)
-        const url = 'https://libretranslate.de/translate';
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                q: text,
-                source: 'auto',
-                target: 'en',
-                format: 'text'
-            })
+    // ========== FUNGSI FETCH DENGAN TIMEOUT ==========
+    fetchWithTimeout(promise, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                reject(new Error(`Request timeout after ${timeoutMs}ms`));
+            }, timeoutMs);
+            
+            promise
+                .then(result => {
+                    clearTimeout(timeoutId);
+                    resolve(result);
+                })
+                .catch(error => {
+                    clearTimeout(timeoutId);
+                    reject(error);
+                });
         });
-
-        if (!response.ok) {
-            throw new Error('Translation API failed');
-        }
-
-        const data = await response.json();
-        return data.translatedText;
     }
 
+    // ========== SISANYA SAMA ==========
     uploadAlbumImage(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                // Crop 1:1
                 const canvas = document.createElement('canvas');
                 const size = Math.min(img.width, img.height);
                 canvas.width = size;
@@ -347,21 +298,15 @@ class DOMHandler {
 
     populateColorSelection() {
         if (!this.colorSelection) return;
-
-        // Hapus warna lama
         this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
 
-        // Tambahkan warna baru dari COLORS
         COLORS.forEach((color) => {
             const element = document.createElement("div");
             element.classList.add("select-color");
             element.style.backgroundColor = color;
-            
-            // Tambahkan border untuk warna putih agar terlihat
             if (color === "#ffffff") {
                 element.style.border = "2px solid #ccc";
             }
-            
             element.textContent = ".";
             element.style.color = "transparent";
 
@@ -441,7 +386,6 @@ class DOMHandler {
 
     populateSongSelection() {
         if (!this.songSelection) return;
-
         this.songSelection.querySelectorAll(".select-song:not(.cloneable)").forEach(el => el.remove());
 
         this.songs.forEach((song, index) => {
@@ -464,48 +408,6 @@ class DOMHandler {
         }, SELECTION_ANIMATION_DELAY);
     }
 
-    async findLyrics() {
-        if (this.isLoadingLyrics) return;
-        this.isLoadingLyrics = true;
-
-        this.lineSelection.innerHTML = "";
-        this.displayScreen(3);
-        this.displaySongInfo();
-        this.displaySearching(SEARCHING_FOR_LYRICS);
-
-        const song = this.songs[this.selectedSongIndex];
-        const artists = song.artists.map(a => a.name);
-        let lyrics = null;
-
-        try {
-            const promises = artists.map(artist => 
-                this.fetcher.getSongLyrics(artist, song.name)
-            );
-            const results = await Promise.all(promises);
-            
-            for (const result of results) {
-                if (result && result.plainLyrics) {
-                    lyrics = result;
-                    break;
-                }
-            }
-            
-            if (lyrics === null) throw Error("Lyrics not found");
-        } catch (error) {
-            this.hideSearching();
-            this.isLoadingLyrics = false;
-            if (document.querySelector(".final-options").classList.contains("hidden")) {
-                this.displaySongImage();
-            }
-            return console.error(error);
-        }
-
-        this.hideSearching();
-        this.isLoadingLyrics = false;
-        song.loadLyrics(lyrics);
-        this.populateLineSelection();
-    }
-
     displaySongInfo() {
         const song = this.songs[this.selectedSongIndex];
         if (this.songInfoCover) this.songInfoCover.src = song.albumCoverUrl;
@@ -520,7 +422,7 @@ class DOMHandler {
         if (!lyrics || lyrics.length === 0) {
             const noLyricsMsg = document.createElement("div");
             noLyricsMsg.classList.add("no-lyrics-message");
-            noLyricsMsg.textContent = "No lyrics found. You can still proceed to customize your image.";
+            noLyricsMsg.innerHTML = "📝 No lyrics found.<br>You can type your own lyrics in the next step.";
             noLyricsMsg.style.padding = "20px";
             noLyricsMsg.style.textAlign = "center";
             noLyricsMsg.style.fontSize = "0.9rem";
