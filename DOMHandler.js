@@ -18,9 +18,6 @@ const COLORS = [
     "#b5ffc0",
 ];
 
-// TIMEOUT UNTUK REQUEST LIRIK (5 detik)
-const LYRICS_TIMEOUT = 5000;
-
 class DOMHandler {
     constructor(fetcher) {
         this.fetcher = fetcher;
@@ -166,57 +163,7 @@ class DOMHandler {
             });
         });
     }
-
-    // ========== FIND LYRICS DENGAN FALLBACK GOOGLE ==========
-    async findLyrics() {
-        if (this.isLoadingLyrics) return;
-        this.isLoadingLyrics = true;
-
-        this.lineSelection.innerHTML = "";
-        this.displayScreen(3);
-        this.displaySongInfo();
-        this.displaySearching(SEARCHING_FOR_LYRICS);
-
-        const song = this.songs[this.selectedSongIndex];
-        const artists = song.artists.map(a => a.name);
-        let lyrics = null;
-
-        try {
-            // Coba dengan artist pertama
-            const firstArtist = artists[0];
-            if (firstArtist) {
-                try {
-                    const result = await this.fetchWithTimeout(
-                        this.fetcher.getSongLyrics(firstArtist, song.name),
-                        LYRICS_TIMEOUT
-                    );
-                    if (result && result.plainLyrics) {
-                        lyrics = result;
-                    }
-                } catch (e) {
-                    console.log(`First artist "${firstArtist}" not found, trying others...`);
-                }
-            }
-
-            // Jika tidak ditemukan, coba artist lain
-            if (!lyrics && artists.length > 1) {
-                const remainingArtists = artists.slice(1);
-                const promises = remainingArtists.map(artist => 
-                    this.fetchWithTimeout(
-                        this.fetcher.getSongLyrics(artist, song.name),
-                        LYRICS_TIMEOUT
-                    ).catch(() => null)
-                );
-                
-                const results = await Promise.all(promises);
-                for (const result of results) {
-                    if (result && result.plainLyrics) {
-                        lyrics = result;
-                        break;
-                    }
-                }
-            }
-
+    
             if (lyrics === null) throw Error("Lyrics not found");
             
         } catch (error) {
@@ -227,7 +174,7 @@ class DOMHandler {
             // Tampilkan pesan tidak ada lirik
             const noLyricsMsg = document.createElement("div");
             noLyricsMsg.classList.add("no-lyrics-message");
-            noLyricsMsg.innerHTML = "❌ No lyrics found.<br>You can type your own lyrics in the next step.";
+            noLyricsMsg.innerHTML = "No lyrics found.<br>You can type your own lyrics in the next step.";
             noLyricsMsg.style.padding = "20px";
             noLyricsMsg.style.textAlign = "center";
             noLyricsMsg.style.fontSize = "0.9rem";
@@ -243,25 +190,6 @@ class DOMHandler {
         this.isLoadingLyrics = false;
         song.loadLyrics(lyrics);
         this.populateLineSelection();
-    }
-
-    // ========== FUNGSI FETCH DENGAN TIMEOUT ==========
-    fetchWithTimeout(promise, timeoutMs) {
-        return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => {
-                reject(new Error(`Request timeout after ${timeoutMs}ms`));
-            }, timeoutMs);
-            
-            promise
-                .then(result => {
-                    clearTimeout(timeoutId);
-                    resolve(result);
-                })
-                .catch(error => {
-                    clearTimeout(timeoutId);
-                    reject(error);
-                });
-        });
     }
 
     // ========== SISANYA SAMA ==========
