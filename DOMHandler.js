@@ -53,10 +53,24 @@ class DOMHandler {
         this.widthSlider = document.querySelector("#width-slider");
         this.widthValue = document.querySelector("#width-value");
         
-        // TAMBAH INI - Upload foto
+        // Upload foto
         this.fileInput = document.querySelector(".song-image .file-input");
         this.albumImageWrapper = document.querySelector(".song-image .album-image-wrapper");
         this.screen4AlbumImg = document.querySelector(".song-image .screen4-album-img");
+
+        // ========== BACKGROUND MODAL REFS ==========
+        this.bgModal = document.querySelector('#background-modal');
+        this.bgModalOverlay = document.querySelector('#background-modal-overlay');
+        this.bgModalClose = document.querySelector('#background-modal-close');
+        this.bgOpenBtn = document.querySelector('#open-background-modal');
+        this.bgCanvasContainer = document.querySelector('#bg-canvas-container');
+        this.bgSongOverlay = document.querySelector('#bg-song-overlay');
+        this.bgImage = document.querySelector('#bg-canvas-image');
+        this.bgCreditText = document.querySelector('#bg-credit-text');
+        this.bgDownloadBtn = document.querySelector('#bg-download-btn');
+        this.bgSizeSlider = document.querySelector('#bg-size-slider');
+        this.bgSizeLabel = document.querySelector('#bg-size-label');
+        this.bgUploadInput = document.querySelector('#bg-upload-input');
 
         this.setListeners();
         this.populateColorSelection();
@@ -145,7 +159,7 @@ class DOMHandler {
             });
         }
 
-        // TAMBAH INI - Upload foto
+        // Upload foto
         if (this.fileInput) {
             this.fileInput.addEventListener("change", (e) => {
                 const file = e.target.files[0];
@@ -176,9 +190,94 @@ class DOMHandler {
                 }
             });
         }
+
+        // ========== BACKGROUND MODAL LISTENERS ==========
+        if (this.bgOpenBtn) {
+            this.bgOpenBtn.addEventListener('click', () => {
+                this.openBackgroundModal();
+            });
+        }
+
+        if (this.bgModalClose) {
+            this.bgModalClose.addEventListener('click', () => {
+                this.closeBackgroundModal();
+            });
+        }
+
+        if (this.bgModalOverlay) {
+            this.bgModalOverlay.addEventListener('click', () => {
+                this.closeBackgroundModal();
+            });
+        }
+
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.bgModal && this.bgModal.classList.contains('open')) {
+                this.closeBackgroundModal();
+            }
+        });
+
+        // Background controls
+        this.bgButtons = document.querySelectorAll('[data-bg]');
+        this.bgCreditButtons = document.querySelectorAll('[data-credit]');
+
+        this.bgButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.bgButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.updateBgCanvas();
+            });
+        });
+
+        this.bgCreditButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.bgCreditButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const action = btn.dataset.credit;
+                if (action === 'show') {
+                    this.bgCreditText.classList.remove('hidden');
+                } else {
+                    this.bgCreditText.classList.add('hidden');
+                }
+            });
+        });
+
+        if (this.bgSizeSlider) {
+            this.bgSizeSlider.addEventListener('input', () => {
+                const val = this.bgSizeSlider.value;
+                this.bgSizeLabel.textContent = val + '%';
+                if (this.bgSongOverlay) {
+                    this.bgSongOverlay.style.width = val + '%';
+                }
+            });
+        }
+
+        if (this.bgUploadInput) {
+            this.bgUploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.bgImage.src = ev.target.result;
+                    this.bgImage.style.display = 'block';
+                    this.bgCanvasContainer.style.backgroundColor = 'transparent';
+                    this.bgButtons.forEach(b => b.classList.remove('active'));
+                    const photoBtn = document.querySelector('.bg-upload-btn');
+                    if (photoBtn) photoBtn.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+                this.bgUploadInput.value = '';
+            });
+        }
+
+        if (this.bgDownloadBtn) {
+            this.bgDownloadBtn.addEventListener('click', () => {
+                this.downloadBackground();
+            });
+        }
     }
 
-    // TAMBAH INI - Fungsi upload foto dengan crop 1:1
+    // ========== UPLOAD FOTO ==========
     uploadAlbumImage(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -210,20 +309,101 @@ class DOMHandler {
         this.fileInput.value = '';
     }
 
+    // ========== BACKGROUND MODAL METHODS ==========
+    openBackgroundModal() {
+        if (!this.bgModal) return;
+        this.bgModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        this.updateBgOverlay();
+        this.updateBgCanvas();
+    }
+
+    closeBackgroundModal() {
+        if (!this.bgModal) return;
+        this.bgModal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    updateBgOverlay() {
+        if (!this.bgSongOverlay) return;
+        const source = document.querySelector('#song-image-container');
+        if (source) {
+            const clone = source.cloneNode(true);
+            const fileInput = clone.querySelector('.file-input');
+            if (fileInput) fileInput.remove();
+            clone.querySelectorAll('[contenteditable]').forEach(el => {
+                el.contentEditable = 'false';
+            });
+            this.bgSongOverlay.innerHTML = '';
+            this.bgSongOverlay.appendChild(clone);
+            
+            if (this.bgSizeSlider) {
+                const val = this.bgSizeSlider.value;
+                this.bgSongOverlay.style.width = val + '%';
+            }
+        }
+    }
+
+    updateBgCanvas() {
+        const activeBg = document.querySelector('[data-bg].active');
+        if (!activeBg) return;
+        const bg = activeBg.dataset.bg;
+        if (bg === 'white') {
+            this.bgImage.style.display = 'none';
+            this.bgCanvasContainer.style.backgroundColor = '#ffffff';
+            this.bgImage.src = '';
+        } else if (bg === 'black') {
+            this.bgImage.style.display = 'none';
+            this.bgCanvasContainer.style.backgroundColor = '#000000';
+            this.bgImage.src = '';
+        }
+    }
+
+    async downloadBackground() {
+        if (!this.bgDownloadBtn) return;
+        const btn = this.bgDownloadBtn;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Generating...';
+        btn.disabled = true;
+        
+        const wasHidden = this.bgCreditText.classList.contains('hidden');
+        if (wasHidden) this.bgCreditText.classList.remove('hidden');
+        
+        try {
+            const canvas = await html2canvas(this.bgCanvasContainer, {
+                scale: 1.33,
+                backgroundColor: null,
+                useCORS: true,
+                allowTaint: false,
+                logging: false
+            });
+            canvas.toBlob((blob) => {
+                saveAs(blob, 'chosong-background.png');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (wasHidden) this.bgCreditText.classList.add('hidden');
+            });
+        } catch (err) {
+            console.error('Download failed:', err);
+            alert('Failed to download image');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (wasHidden) this.bgCreditText.classList.add('hidden');
+        }
+    }
+
+    // ========== SISANYA SAMA ==========
     populateColorSelection() {
         if (!this.colorSelection) return;
-
         this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
 
         COLORS.forEach((color) => {
             const element = document.createElement("div");
             element.classList.add("select-color");
             element.style.backgroundColor = color;
-            
             if (color === "#ffffff") {
                 element.style.border = "2px solid #ccc";
             }
-            
             element.textContent = ".";
             element.style.color = "transparent";
 
@@ -303,7 +483,6 @@ class DOMHandler {
 
     populateSongSelection() {
         if (!this.songSelection) return;
-
         this.songSelection.querySelectorAll(".select-song:not(.cloneable)").forEach(el => el.remove());
 
         this.songs.forEach((song, index) => {
@@ -401,7 +580,6 @@ class DOMHandler {
     setSongImage() {
         const song = this.songs[this.selectedSongIndex];
         
-        // TAMBAH INI - Set album image dari song
         if (this.screen4AlbumImg && song.albumCoverUrl) {
             this.screen4AlbumImg.src = song.albumCoverUrl;
             this.screen4AlbumImg.style.display = 'block';
