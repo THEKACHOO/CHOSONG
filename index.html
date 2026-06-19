@@ -105,6 +105,14 @@
                     </button>
                 </div>
 
+                <!-- TOMBOL TERJEMAH -->
+                <div class="translate-container">
+                    <button class="translate-button" id="translate-lyrics">
+                        <span class="material-symbols-outlined">translate</span>
+                        Translate to English
+                    </button>
+                </div>
+
                 <div class="lines-selection"></div>
 
                 <div class="searching hidden"></div>
@@ -125,7 +133,13 @@
                 <div class="searching hidden"></div>
                 <div class="song-image" id="song-image-container">
                     <div class="header">
-                        <img class="screen4-album-img" src="" alt="album-cover">
+                        <div class="album-image-wrapper">
+                            <img class="screen4-album-img" src="" alt="album-cover">
+                            <div class="upload-overlay">
+                                <span class="material-symbols-outlined">photo_camera</span>
+                            </div>
+                            <input type="file" class="file-input" accept="image/*">
+                        </div>
                         <div>
                             <div class="name" contenteditable></div>
                             <div class="authors" contenteditable></div>
@@ -145,7 +159,7 @@
                 </div>
                 <div class="switch-container additional-bg" id="additional-bg">
                     <div class="switch"></div>
-                    <div>Background</div>
+                    <div>Lighting</div>
                 </div>
                 <div class="width-control">
                     <div>
@@ -153,6 +167,12 @@
                         <span id="width-value">320px</span>
                     </div>
                     <input type="range" id="width-slider" min="200" max="600" value="320" step="10">
+                </div>
+                <div class="background-button-container">
+                    <a href="Edit.html" class="background-button">
+                        <span class="material-symbols-outlined">wallpaper</span>
+                        Background
+                    </a>
                 </div>
             </div>
         </section>
@@ -206,14 +226,10 @@
         
         function updateLogos(isDark) {
             if (isDark) {
-                // Header logo dark
                 if (headerLogo) headerLogo.src = 'Chosong2.png';
-                // Mood logo dark (di atas title)
                 if (moodLogo) moodLogo.src = 'Chosong2.1.png';
             } else {
-                // Header logo light
                 if (headerLogo) headerLogo.src = 'Chosong1.png';
-                // Mood logo light
                 if (moodLogo) moodLogo.src = 'Chosong1.2.png';
             }
         }
@@ -246,11 +262,10 @@
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             });
         } else {
-            // Fallback kalau checkbox gak ada
             updateLogos(getInitialTheme());
         }
     })();
     </script>
 </body>
 
-                            </html>
+</html>
