@@ -7,14 +7,14 @@ const DOWNLOADING = "Downloading lyrics image...";
 const NO_LYRICS_FOUND = "No lyrics found<br>You can still type your own lyrics by clicking here :)";
 const NO_LYRICS_SELECTED = "No lyrics selected<br>You can still type your own lyrics by clicking here :)";
 
+// WARNA BARU SESUAI PERMINTAAN
 const COLORS = [
-    "#008fd1",
-    "#549aab",
-    "#8fc00c",
-    "#729962",
-    "#a2904e",
-    "#cd6800",
-    "#fc302f",
+    "#ffffff",  // Putih
+    "#2e2928",  // Coklat gelap
+    "#ffa9a3",  // Peach/pink muda
+    "#cc0e00",  // Merah
+    "#83b8fc",  // Biru muda
+    "#fcd683",  // Kuning
 ];
 
 class DOMHandler {
@@ -23,6 +23,7 @@ class DOMHandler {
         this.songs = [];
         this.selectedSongIndex = null;
         this.usedDirectLink = false;
+        this.isLoadingLyrics = false;
 
         // DOM Elements
         this.errorTexts = document.querySelectorAll(".error");
@@ -51,6 +52,12 @@ class DOMHandler {
         this.songImage = document.querySelector(".song-image");
         this.widthSlider = document.querySelector("#width-slider");
         this.widthValue = document.querySelector("#width-value");
+        this.fileInput = document.querySelector(".song-image .file-input");
+        this.albumImageWrapper = document.querySelector(".song-image .album-image-wrapper");
+        this.screen4AlbumImg = document.querySelector(".song-image .screen4-album-img");
+
+        // Tombol terjemah
+        this.translateButton = document.querySelector("#translate-lyrics");
 
         this.setListeners();
         this.populateColorSelection();
@@ -96,6 +103,13 @@ class DOMHandler {
             });
         }
 
+        // TOMBOL TERJEMAH
+        if (this.translateButton) {
+            this.translateButton.addEventListener("click", () => {
+                this.translateSelectedLyrics();
+            });
+        }
+
         // Screen 4
         if (this.lastGoBack) {
             this.lastGoBack.addEventListener("click", () => {
@@ -109,7 +123,6 @@ class DOMHandler {
             });
         }
 
-        // PERBAIKAN 1: TOMBOL SWITCH BISA GERAK
         if (this.lightTextSwitch) {
             this.lightTextSwitch.addEventListener("click", () => {
                 this.lightTextSwitch.classList.toggle("active");
@@ -140,6 +153,16 @@ class DOMHandler {
             });
         }
 
+        // Upload foto
+        if (this.fileInput) {
+            this.fileInput.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.uploadAlbumImage(file);
+                }
+            });
+        }
+
         // Contenteditable paste as plain text
         document.querySelectorAll("[contenteditable]").forEach((field) => {
             field.addEventListener("paste", function(e) {
@@ -163,14 +186,140 @@ class DOMHandler {
         }
     }
 
+    // FUNGSI TERJEMAH LIRIK
+    async translateSelectedLyrics() {
+        const selectedLines = document.querySelectorAll(".select-line.selected");
+        
+        if (selectedLines.length === 0) {
+            alert("Please select at least one line to translate!");
+            return;
+        }
+
+        // Tampilkan loading
+        const translateBtn = this.translateButton;
+        const originalText = translateBtn.textContent;
+        translateBtn.textContent = "Translating...";
+        translateBtn.disabled = true;
+
+        try {
+            // Kumpulkan teks dari semua line yang dipilih
+            const texts = Array.from(selectedLines).map(line => line.textContent.trim());
+            
+            // Gabungkan untuk diterjemahkan sekaligus (dipisah dengan newline)
+            const fullText = texts.join('\n');
+            
+            // Panggil API terjemahan (menggunakan MyMemory atau LibreTranslate)
+            const translated = await this.translateText(fullText);
+            
+            // Split hasil terjemahan per baris
+            const translatedLines = translated.split('\n');
+            
+            // Update setiap line yang dipilih dengan terjemahan
+            selectedLines.forEach((line, index) => {
+                if (index < translatedLines.length) {
+                    // Simpan teks asli di data attribute
+                    if (!line.dataset.original) {
+                        line.dataset.original = line.textContent;
+                    }
+                    line.textContent = translatedLines[index] || line.textContent;
+                    // Tambahkan class untuk styling
+                    line.classList.add('translated');
+                }
+            });
+
+            // Tampilkan notifikasi
+            translateBtn.textContent = "✓ Translated!";
+            setTimeout(() => {
+                translateBtn.textContent = originalText;
+                translateBtn.disabled = false;
+            }, 2000);
+
+        } catch (error) {
+            console.error("Translation error:", error);
+            alert("Failed to translate lyrics. Please try again.");
+            translateBtn.textContent = originalText;
+            translateBtn.disabled = false;
+        }
+    }
+
+    // FUNGSI TERJEMAH KE BAHASA INGGRIS
+    async translateText(text) {
+        // Gunakan LibreTranslate API (gratis)
+        const url = 'https://libretranslate.de/translate';
+        
+        // Deteksi bahasa otomatis, target ke Inggris
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                q: text,
+                source: 'auto',
+                target: 'en',
+                format: 'text'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Translation API failed');
+        }
+
+        const data = await response.json();
+        return data.translatedText;
+    }
+
+    uploadAlbumImage(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                // Crop 1:1
+                const canvas = document.createElement('canvas');
+                const size = Math.min(img.width, img.height);
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const sx = (img.width - size) / 2;
+                const sy = (img.height - size) / 2;
+                ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+                
+                const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                if (this.screen4AlbumImg) {
+                    this.screen4AlbumImg.src = croppedDataUrl;
+                    this.screen4AlbumImg.style.display = 'block';
+                }
+                if (this.albumImageWrapper) {
+                    this.albumImageWrapper.style.backgroundImage = `url(${croppedDataUrl})`;
+                    this.albumImageWrapper.style.backgroundSize = 'cover';
+                    this.albumImageWrapper.style.backgroundPosition = 'center';
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        this.fileInput.value = '';
+    }
+
     populateColorSelection() {
         if (!this.colorSelection) return;
 
+        // Hapus warna lama (jika ada)
+        this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
+
+        // Tambahkan warna baru dari COLORS
         COLORS.forEach((color) => {
             const element = document.createElement("div");
             element.classList.add("select-color");
             element.style.backgroundColor = color;
+            
+            // Tambahkan border untuk warna putih agar terlihat
+            if (color === "#ffffff") {
+                element.style.border = "2px solid #ccc";
+            }
+            
             element.textContent = ".";
+            element.style.color = "transparent";
 
             element.addEventListener("click", () => {
                 this.setSongImageColor(color);
@@ -272,6 +421,9 @@ class DOMHandler {
     }
 
     async findLyrics() {
+        if (this.isLoadingLyrics) return;
+        this.isLoadingLyrics = true;
+
         this.lineSelection.innerHTML = "";
         this.displayScreen(3);
         this.displaySongInfo();
@@ -280,16 +432,24 @@ class DOMHandler {
         const song = this.songs[this.selectedSongIndex];
         const artists = song.artists.map(a => a.name);
         let lyrics = null;
-        let currentArtist = 0;
 
         try {
-            while (lyrics === null && artists.length > currentArtist) {
-                lyrics = await this.fetcher.getSongLyrics(artists[currentArtist], song.name);
-                currentArtist++;
+            const promises = artists.map(artist => 
+                this.fetcher.getSongLyrics(artist, song.name)
+            );
+            const results = await Promise.all(promises);
+            
+            for (const result of results) {
+                if (result && result.plainLyrics) {
+                    lyrics = result;
+                    break;
+                }
             }
+            
             if (lyrics === null) throw Error("Lyrics not found");
         } catch (error) {
             this.hideSearching();
+            this.isLoadingLyrics = false;
             if (document.querySelector(".final-options").classList.contains("hidden")) {
                 this.displaySongImage();
             }
@@ -297,6 +457,7 @@ class DOMHandler {
         }
 
         this.hideSearching();
+        this.isLoadingLyrics = false;
         song.loadLyrics(lyrics);
         this.populateLineSelection();
     }
@@ -311,6 +472,18 @@ class DOMHandler {
     populateLineSelection() {
         let animationDelay = SELECTION_ANIMATION_DELAY;
         const lyrics = this.songs[this.selectedSongIndex].lyrics;
+
+        if (!lyrics || lyrics.length === 0) {
+            const noLyricsMsg = document.createElement("div");
+            noLyricsMsg.classList.add("no-lyrics-message");
+            noLyricsMsg.textContent = "No lyrics found. You can still proceed to customize your image.";
+            noLyricsMsg.style.padding = "20px";
+            noLyricsMsg.style.textAlign = "center";
+            noLyricsMsg.style.fontSize = "0.9rem";
+            noLyricsMsg.style.color = "var(--text-gray)";
+            this.lineSelection.append(noLyricsMsg);
+            return;
+        }
 
         lyrics.forEach((line, index) => {
             const element = document.createElement("div");
@@ -343,13 +516,17 @@ class DOMHandler {
         }
     }
 
-    // PERBAIKAN 2: LIRIK KE BAWAH PER BARIS
     setSongImage() {
         const song = this.songs[this.selectedSongIndex];
         
-        const screen4Img = document.querySelector(".song-image .header .screen4-album-img");
-        if (screen4Img && song.albumCoverUrl) {
-            screen4Img.src = song.albumCoverUrl;
+        if (this.screen4AlbumImg && song.albumCoverUrl) {
+            this.screen4AlbumImg.src = song.albumCoverUrl;
+            this.screen4AlbumImg.style.display = 'block';
+            if (this.albumImageWrapper) {
+                this.albumImageWrapper.style.backgroundImage = `url(${song.albumCoverUrl})`;
+                this.albumImageWrapper.style.backgroundSize = 'cover';
+                this.albumImageWrapper.style.backgroundPosition = 'center';
+            }
         }
         
         const nameDiv = document.querySelector(".song-image .header .name");
@@ -357,15 +534,26 @@ class DOMHandler {
         if (nameDiv) nameDiv.textContent = song.name;
         if (authorsDiv) authorsDiv.textContent = song.artists.map(a => a.name).join(", ");
         
-        // INI YANG DIUBAH - LIRIK PER BARIS KE BAWAH
         const selectedLines = document.querySelectorAll(".select-line.selected");
         let lyricsHtml = '';
-        Array.from(selectedLines).forEach(line => {
-            let lineText = line.textContent.trim();
-            if (lineText) {
-                lyricsHtml += `<div class="lyric-line">${lineText}</div>`;
+        if (selectedLines.length > 0) {
+            Array.from(selectedLines).forEach(line => {
+                let lineText = line.textContent.trim();
+                if (lineText) {
+                    lyricsHtml += `<div class="lyric-line">${lineText}</div>`;
+                }
+            });
+        } else {
+            const song = this.songs[this.selectedSongIndex];
+            if (song.lyrics && song.lyrics.length > 0) {
+                song.lyrics.forEach(lyric => {
+                    if (lyric.text.trim()) {
+                        lyricsHtml += `<div class="lyric-line">${lyric.text}</div>`;
+                    }
+                });
             }
-        });
+        }
+        
         const lyricsDiv = document.querySelector(".song-image .lyrics");
         if (lyricsDiv) lyricsDiv.innerHTML = lyricsHtml || NO_LYRICS_SELECTED;
         
@@ -479,4 +667,4 @@ class DOMHandler {
             }
         });
     }
-                                                 }
+}
