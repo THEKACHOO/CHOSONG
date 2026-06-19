@@ -7,7 +7,7 @@ const DOWNLOADING = "Downloading lyrics image...";
 const NO_LYRICS_FOUND = "No lyrics found<br>You can still type your own lyrics by clicking here :)";
 const NO_LYRICS_SELECTED = "No lyrics selected<br>You can still type your own lyrics by clicking here :)";
 
-// WARNA BARU SESUAI PERMINTAAN
+// WARNA BARU - tambah #b5ffc0
 const COLORS = [
     "#ffffff",  // Putih
     "#2e2928",  // Coklat gelap
@@ -15,6 +15,7 @@ const COLORS = [
     "#cc0e00",  // Merah
     "#83b8fc",  // Biru muda
     "#fcd683",  // Kuning
+    "#b5ffc0",  // Hijau mint (BARU)
 ];
 
 class DOMHandler {
@@ -24,6 +25,7 @@ class DOMHandler {
         this.selectedSongIndex = null;
         this.usedDirectLink = false;
         this.isLoadingLyrics = false;
+        this.isTranslating = false; // Untuk mencegah spam klik
 
         // DOM Elements
         this.errorTexts = document.querySelectorAll(".error");
@@ -103,10 +105,10 @@ class DOMHandler {
             });
         }
 
-        // TOMBOL TERJEMAH
+        // TOMBOL TERJEMAH - Translate ALL lyrics
         if (this.translateButton) {
             this.translateButton.addEventListener("click", () => {
-                this.translateSelectedLyrics();
+                this.translateAllLyrics();
             });
         }
 
@@ -172,73 +174,116 @@ class DOMHandler {
             });
         });
 
-        // Dark mode toggle
-        const darkModeToggle = document.querySelector("#dark-mode-toggle");
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener("click", () => {
-                document.body.classList.toggle("dark-mode");
-                const isDark = document.body.classList.contains("dark-mode");
-                const icon = darkModeToggle.querySelector(".material-symbols-outlined");
-                if (icon) {
-                    icon.textContent = isDark ? "dark_mode" : "light_mode";
+        // Dark mode toggle - untuk update tombol translate
+        const checkbox = document.getElementById('theme-toggle-checkbox');
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                // Update tampilan tombol translate
+                const translateBtn = document.querySelector('#translate-lyrics');
+                if (translateBtn) {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    if (isDark) {
+                        translateBtn.classList.add('dark-translate');
+                        translateBtn.classList.remove('light-translate');
+                    } else {
+                        translateBtn.classList.remove('dark-translate');
+                        translateBtn.classList.add('light-translate');
+                    }
                 }
             });
         }
+
+        // Initial theme untuk tombol translate
+        setTimeout(() => {
+            const translateBtn = document.querySelector('#translate-lyrics');
+            if (translateBtn) {
+                const isDark = document.body.classList.contains('dark-mode');
+                if (isDark) {
+                    translateBtn.classList.add('dark-translate');
+                } else {
+                    translateBtn.classList.add('light-translate');
+                }
+            }
+        }, 100);
     }
 
-    // FUNGSI TERJEMAH LIRIK
-    async translateSelectedLyrics() {
-        const selectedLines = document.querySelectorAll(".select-line.selected");
+    // FUNGSI TERJEMAH SEMUA LIRIK
+    async translateAllLyrics() {
+        // Cegah spam klik
+        if (this.isTranslating) return;
+        this.isTranslating = true;
+
+        const allLines = document.querySelectorAll(".select-line");
         
-        if (selectedLines.length === 0) {
-            alert("Please select at least one line to translate!");
+        if (allLines.length === 0) {
+            alert("No lyrics to translate!");
+            this.isTranslating = false;
             return;
         }
 
-        // Tampilkan loading
         const translateBtn = this.translateButton;
-        const originalText = translateBtn.textContent;
-        translateBtn.textContent = "Translating...";
+        const originalHTML = translateBtn.innerHTML;
+        
+        // Tampilkan loading
+        translateBtn.innerHTML = `<span class="material-symbols-outlined">sync</span> Translating...`;
         translateBtn.disabled = true;
+        translateBtn.style.opacity = '0.7';
 
         try {
-            // Kumpulkan teks dari semua line yang dipilih
-            const texts = Array.from(selectedLines).map(line => line.textContent.trim());
+            // Kumpulkan SEMUA teks lirik
+            const texts = Array.from(allLines).map(line => line.textContent.trim());
+            const validTexts = texts.filter(text => text.length > 0);
             
-            // Gabungkan untuk diterjemahkan sekaligus (dipisah dengan newline)
-            const fullText = texts.join('\n');
+            if (validTexts.length === 0) {
+                alert("No lyrics to translate!");
+                this.isTranslating = false;
+                translateBtn.innerHTML = originalHTML;
+                translateBtn.disabled = false;
+                translateBtn.style.opacity = '1';
+                return;
+            }
             
-            // Panggil API terjemahan (menggunakan MyMemory atau LibreTranslate)
+            // Gabungkan semua lirik
+            const fullText = validTexts.join('\n');
+            
+            // Panggil API terjemahan
             const translated = await this.translateText(fullText);
             
             // Split hasil terjemahan per baris
             const translatedLines = translated.split('\n');
             
-            // Update setiap line yang dipilih dengan terjemahan
-            selectedLines.forEach((line, index) => {
-                if (index < translatedLines.length) {
-                    // Simpan teks asli di data attribute
+            // Update SEMUA line dengan terjemahan
+            let lineIndex = 0;
+            allLines.forEach((line) => {
+                const text = line.textContent.trim();
+                if (text.length > 0 && lineIndex < translatedLines.length) {
+                    // Simpan teks asli di data attribute (hanya jika belum ada)
                     if (!line.dataset.original) {
-                        line.dataset.original = line.textContent;
+                        line.dataset.original = text;
                     }
-                    line.textContent = translatedLines[index] || line.textContent;
-                    // Tambahkan class untuk styling
+                    line.textContent = translatedLines[lineIndex] || text;
                     line.classList.add('translated');
+                    lineIndex++;
                 }
             });
 
-            // Tampilkan notifikasi
-            translateBtn.textContent = "✓ Translated!";
+            // Tampilkan notifikasi sukses
+            translateBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Translated!`;
+            translateBtn.style.opacity = '1';
+            translateBtn.disabled = false;
+            
             setTimeout(() => {
-                translateBtn.textContent = originalText;
-                translateBtn.disabled = false;
+                translateBtn.innerHTML = originalHTML;
+                this.isTranslating = false;
             }, 2000);
 
         } catch (error) {
             console.error("Translation error:", error);
             alert("Failed to translate lyrics. Please try again.");
-            translateBtn.textContent = originalText;
+            translateBtn.innerHTML = originalHTML;
             translateBtn.disabled = false;
+            translateBtn.style.opacity = '1';
+            this.isTranslating = false;
         }
     }
 
@@ -247,7 +292,6 @@ class DOMHandler {
         // Gunakan LibreTranslate API (gratis)
         const url = 'https://libretranslate.de/translate';
         
-        // Deteksi bahasa otomatis, target ke Inggris
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -304,7 +348,7 @@ class DOMHandler {
     populateColorSelection() {
         if (!this.colorSelection) return;
 
-        // Hapus warna lama (jika ada)
+        // Hapus warna lama
         this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
 
         // Tambahkan warna baru dari COLORS
