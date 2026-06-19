@@ -70,6 +70,8 @@ class DOMHandler {
         this.bgDownloadBtn = document.querySelector('#bg-download-btn');
         this.bgZoomSlider = document.querySelector('#bg-zoom-slider');
         this.bgZoomLabel = document.querySelector('#bg-zoom-label');
+        this.bgWidthSlider = document.querySelector('#bg-width-slider');
+        this.bgWidthLabel = document.querySelector('#bg-width-label');
         this.bgUploadInput = document.querySelector('#bg-upload-input');
 
         this.setListeners();
@@ -253,6 +255,26 @@ class DOMHandler {
             });
         }
 
+        // WIDTH SLIDER - SAMA DENGAN SCREEN 4
+        if (this.bgWidthSlider) {
+            this.bgWidthSlider.addEventListener('input', () => {
+                const val = this.bgWidthSlider.value;
+                this.bgWidthLabel.textContent = val + 'px';
+                // Update width di song image overlay
+                const songImage = this.bgSongOverlay ? this.bgSongOverlay.querySelector('.song-image') : null;
+                if (songImage) {
+                    songImage.style.width = val + 'px';
+                    songImage.style.maxWidth = '100%';
+                }
+                // Sync ke Screen 4 juga
+                if (this.widthSlider) {
+                    this.widthSlider.value = val;
+                    this.widthValue.textContent = val + 'px';
+                    this.setSongImageWidth(val);
+                }
+            });
+        }
+
         if (this.bgUploadInput) {
             this.bgUploadInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
@@ -344,6 +366,14 @@ class DOMHandler {
         if (!this.bgModal) return;
         this.bgModal.classList.add('open');
         document.body.style.overflow = 'hidden';
+        
+        // Sync width dari Screen 4 ke modal
+        if (this.bgWidthSlider && this.widthSlider) {
+            const screen4Width = this.widthSlider.value;
+            this.bgWidthSlider.value = screen4Width;
+            this.bgWidthLabel.textContent = screen4Width + 'px';
+        }
+        
         this.updateBgOverlay();
         this.updateBgCanvas();
         // Reset zoom ke 100%
@@ -379,8 +409,6 @@ class DOMHandler {
                 const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
                 songImage.style.width = screen4Width + 'px';
                 songImage.style.maxWidth = '100%';
-                // Hapus style width dari parent biar ga override
-                songImage.style.removeProperty('--song-image-width');
             }
             
             this.bgSongOverlay.innerHTML = '';
