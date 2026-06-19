@@ -11,6 +11,7 @@
     color: var(--background-text-color, rgba(0, 0, 0, 0.95));
     border-radius: 1.5rem;
     transition: 200ms var(--cubic-ease-out);
+    position: relative;
 }
 
 .light-text .song-image {
@@ -24,15 +25,61 @@
     padding-bottom: 1rem;
 }
 
-.song-image > .header > img {
+.song-image > .header > .album-image-wrapper {
+    position: relative;
     height: 2.4rem;
     width: 2.4rem;
     border-radius: 0.5rem;
-    object-fit: cover;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
     background-image: url("https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png");
     background-size: cover;
     background-position: center;
+}
+
+.song-image > .header > .album-image-wrapper > img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    display: block;
     color: transparent;
+}
+
+.song-image > .header > .album-image-wrapper > .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 0.5rem;
+}
+
+.song-image > .header > .album-image-wrapper:hover > .upload-overlay {
+    opacity: 1;
+}
+
+.song-image > .header > .album-image-wrapper > .upload-overlay > .material-symbols-outlined {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.song-image > .header > .album-image-wrapper > .file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
 }
 
 .song-image > .header .name {
@@ -123,4 +170,38 @@
 
 .dark-mode .switch-container.active .switch {
     background-color: var(--primary-color, #ffffff);
+}
+
+/* Tombol Background baru */
+.background-button-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.background-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background-color: var(--primary-color, #000000);
+    color: var(--primary-text-color, #ffffff);
+    border: none;
+    border-radius: 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.background-button:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
+
+.background-button .material-symbols-outlined {
+    color: var(--primary-text-color, #ffffff);
+    font-size: 1.2rem;
 }
