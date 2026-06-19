@@ -243,14 +243,12 @@ class DOMHandler {
         });
 
         // ZOOM SLIDER - HANYA ZOOM IN/ZOOM OUT
-        // UKURAN SONG IMAGE TETAP DARI SCREEN 4
         if (this.bgZoomSlider) {
             this.bgZoomSlider.addEventListener('input', () => {
                 const val = this.bgZoomSlider.value;
                 this.bgZoomLabel.textContent = val + '%';
                 if (this.bgSongOverlay) {
                     this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
-                    this.bgSongOverlay.style.width = 'auto';
                 }
             });
         }
@@ -354,7 +352,6 @@ class DOMHandler {
             this.bgZoomLabel.textContent = '100%';
             if (this.bgSongOverlay) {
                 this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
-                this.bgSongOverlay.style.width = 'auto';
             }
         }
     }
@@ -375,28 +372,28 @@ class DOMHandler {
             clone.querySelectorAll('[contenteditable]').forEach(el => {
                 el.contentEditable = 'false';
             });
-            this.bgSongOverlay.innerHTML = '';
-            this.bgSongOverlay.appendChild(clone);
             
             // ========== AMBIL WIDTH DARI SCREEN 4 ==========
             const songImage = clone.querySelector('.song-image');
             if (songImage) {
-                // Ambil width dari Screen 4
                 const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
-                // Terapkan ke clone di modal
                 songImage.style.width = screen4Width + 'px';
                 songImage.style.maxWidth = '100%';
+                // Hapus style width dari parent biar ga override
+                songImage.style.removeProperty('--song-image-width');
             }
             
-            // ZOOM (tetap pakai transform)
+            this.bgSongOverlay.innerHTML = '';
+            this.bgSongOverlay.appendChild(clone);
+            
+            // ZOOM
             if (this.bgZoomSlider) {
                 const val = this.bgZoomSlider.value;
                 this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
-                this.bgSongOverlay.style.width = 'auto';
             } else {
                 this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
-                this.bgSongOverlay.style.width = 'auto';
             }
+            this.bgSongOverlay.style.width = 'auto';
         }
     }
 
