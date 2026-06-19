@@ -378,8 +378,17 @@ class DOMHandler {
             this.bgSongOverlay.innerHTML = '';
             this.bgSongOverlay.appendChild(clone);
             
-            // UKURAN SONG IMAGE TETAP DARI SCREEN 4
-            // HANYA ZOOM YANG DIATUR
+            // ========== AMBIL WIDTH DARI SCREEN 4 ==========
+            const songImage = clone.querySelector('.song-image');
+            if (songImage) {
+                // Ambil width dari Screen 4
+                const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
+                // Terapkan ke clone di modal
+                songImage.style.width = screen4Width + 'px';
+                songImage.style.maxWidth = '100%';
+            }
+            
+            // ZOOM (tetap pakai transform)
             if (this.bgZoomSlider) {
                 const val = this.bgZoomSlider.value;
                 this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
