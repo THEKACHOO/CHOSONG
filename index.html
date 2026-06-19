@@ -114,60 +114,146 @@
     </button>
 </section>
 
-        <!-- SCREEN 4: Final options -->
-        <section class="lyrics-image-screen hidden final-options" data-number="4">
-            <div class="screen-wrapper">
-                <div class="nav-buttons">
-                    <button class="material-symbols-outlined" id="last-go-back">chevron_left</button>
-                    <h1>Song image</h1>
-                    <button class="material-symbols-outlined" id="download">download</button>
-                </div>
-                <div class="searching hidden"></div>
-                <div class="song-image" id="song-image-container">
-                    <div class="header">
-                        <div class="album-image-wrapper">
-                            <img class="screen4-album-img" src="" alt="album-cover">
-                            <div class="upload-overlay">
-                                <span class="material-symbols-outlined">photo_camera</span>
-                            </div>
-                            <input type="file" class="file-input" accept="image/*">
-                        </div>
-                        <div>
-                            <div class="name" contenteditable></div>
-                            <div class="authors" contenteditable></div>
-                        </div>
+       <!-- SCREEN 4: Final options -->
+<section class="lyrics-image-screen hidden final-options" data-number="4">
+    <div class="screen-wrapper">
+        <div class="nav-buttons">
+            <button class="material-symbols-outlined" id="last-go-back">chevron_left</button>
+            <h1>Song image</h1>
+            <button class="material-symbols-outlined" id="download">download</button>
+        </div>
+        <div class="searching hidden"></div>
+        
+        <!-- SONG IMAGE ORIGINAL -->
+        <div class="song-image" id="song-image-container">
+            <div class="header">
+                <div class="album-image-wrapper">
+                    <img class="screen4-album-img" src="" alt="album-cover">
+                    <div class="upload-overlay">
+                        <span class="material-symbols-outlined">photo_camera</span>
                     </div>
-                    <div class="lyrics" contenteditable="true"></div>
+                    <input type="file" class="file-input" accept="image/*">
                 </div>
-                <div class="color-selection">
-                    <div id="custom-color">
-                        <input type="color" id="custom-color-input" value="#000000">
-                        <label class="material-symbols-outlined" for="custom-color-input">palette</label>
-                    </div>
-                </div>
-                <div class="switch-container light-text" id="light-text">
-                    <div class="switch"></div>
-                    <div>Light text</div>
-                </div>
-                <div class="switch-container additional-bg" id="additional-bg">
-                    <div class="switch"></div>
-                    <div>Lighting</div>
-                </div>
-                <div class="width-control">
-                    <div>
-                        <label for="width-slider">Width</label>
-                        <span id="width-value">320px</span>
-                    </div>
-                    <input type="range" id="width-slider" min="200" max="600" value="320" step="10">
-                </div>
-                <div class="background-button-container">
-                    <a href="Edit.html" class="background-button">
-                        <span class="material-symbols-outlined">wallpaper</span>
-                        Background
-                    </a>
+                <div>
+                    <div class="name" contenteditable></div>
+                    <div class="authors" contenteditable></div>
                 </div>
             </div>
-        </section>
+            <div class="lyrics" contenteditable="true"></div>
+        </div>
+        
+        <div class="color-selection">
+            <div id="custom-color">
+                <input type="color" id="custom-color-input" value="#000000">
+                <label class="material-symbols-outlined" for="custom-color-input">palette</label>
+            </div>
+        </div>
+        <div class="switch-container light-text" id="light-text">
+            <div class="switch"></div>
+            <div>Light text</div>
+        </div>
+        <div class="switch-container additional-bg" id="additional-bg">
+            <div class="switch"></div>
+            <div>Lighting</div>
+        </div>
+        <div class="width-control">
+            <div>
+                <label for="width-slider">Width</label>
+                <span id="width-value">320px</span>
+            </div>
+            <input type="range" id="width-slider" min="200" max="600" value="320" step="10">
+        </div>
+        
+        <!-- TOMBOL BACKGROUND - BUKA MODAL -->
+        <div class="background-button-container">
+            <button class="background-button" id="open-background-modal">
+                <span class="material-symbols-outlined">wallpaper</span>
+                Background
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ========== BACKGROUND MODAL ========== -->
+<div class="background-modal" id="background-modal">
+    <div class="background-modal-overlay" id="background-modal-overlay"></div>
+    <div class="background-modal-content">
+        <div class="background-modal-header">
+            <h2>Edit Background</h2>
+            <button class="background-modal-close" id="background-modal-close">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- Canvas Area 1:1 -->
+        <div class="bg-canvas-wrapper">
+            <div class="bg-canvas-container" id="bg-canvas-container">
+                <!-- Background Image -->
+                <img class="bg-canvas-image" id="bg-canvas-image" src="" alt="Background">
+                
+                <!-- Song Image Overlay (ambil dari screen 4) -->
+                <div class="bg-song-overlay" id="bg-song-overlay">
+                    <!-- Ini akan diisi dari song-image-container -->
+                </div>
+                
+                <!-- Credit Text -->
+                <div class="bg-credit-text" id="bg-credit-text">Made by Chosong, The Kachoo</div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="bg-controls">
+            <div class="bg-control-group">
+                <label>Background</label>
+                <div class="bg-button-group">
+                    <button class="bg-btn-option active" data-bg="white">
+                        <span class="material-symbols-outlined">light_mode</span>
+                        White
+                    </button>
+                    <button class="bg-btn-option" data-bg="black">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                        Black
+                    </button>
+                    <button class="bg-btn-option bg-upload-btn">
+                        <span class="material-symbols-outlined">image</span>
+                        Photo
+                        <input type="file" accept="image/*" id="bg-upload-input">
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-control-group">
+                <label>Image Size</label>
+                <div class="bg-size-control">
+                    <span class="bg-size-value" id="bg-size-label">70%</span>
+                    <input type="range" id="bg-size-slider" min="40" max="90" value="70" step="1">
+                </div>
+            </div>
+            
+            <div class="bg-control-group" style="flex: 0.5; min-width: 80px;">
+                <label>Credit</label>
+                <div class="bg-button-group">
+                    <button class="bg-btn-option active" data-credit="show">
+                        <span class="material-symbols-outlined">visibility</span>
+                        Show
+                    </button>
+                    <button class="bg-btn-option" data-credit="hide">
+                        <span class="material-symbols-outlined">visibility_off</span>
+                        Hide
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Download Button -->
+        <div class="bg-download-container">
+            <button class="bg-download-btn" id="bg-download-btn">
+                <span class="material-symbols-outlined">download</span>
+                Download Background PNG
+            </button>
+        </div>
+    </div>
+</div>
     </main>
 
     <!-- FOOTER -->
