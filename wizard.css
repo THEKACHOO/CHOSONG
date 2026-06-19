@@ -921,4 +921,74 @@
         width: 90%;
         max-width: 13rem;
     }
+
+    /* ========== TOMBOL TERJEMAH ========== */
+.translate-container {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 16px;
+    padding: 0 8px;
+}
+
+.translate-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--primary-color, #000000);
+    color: var(--primary-text-color, #ffffff);
+    border: none;
+    border-radius: 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+}
+
+.translate-button:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
+}
+
+.translate-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.translate-button .material-symbols-outlined {
+    color: var(--primary-text-color, #ffffff);
+    font-size: 1.2rem;
+}
+
+.select-line.translated {
+    background: rgba(131, 184, 252, 0.15) !important;
+    border-left: 3px solid #83b8fc !important;
+}
+
+.dark-mode .translate-button {
+    background: var(--primary-color, #ffffff);
+    color: var(--primary-text-color, #000000);
+}
+
+.dark-mode .translate-button .material-symbols-outlined {
+    color: var(--primary-text-color, #000000);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .translate-button {
+        font-size: 0.75rem;
+        padding: 8px 16px;
+        max-width: 220px;
+    }
+    
+    .translate-button .material-symbols-outlined {
+        font-size: 1rem;
+    }
+}
     }
