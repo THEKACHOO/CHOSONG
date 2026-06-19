@@ -17,6 +17,6 @@ https://palinkiewicz.github.io/lyricpost/
 A project by The Kadio Indonesia, The Kachoo.
 
 ## Contact Us
-X : x.com/TheKachoo
+X : [@TheKachoo](x.com/TheKachoo)
 
 Email: [ohkachoo@gmail.com](mailto:ohkachoo@gmail.com)
