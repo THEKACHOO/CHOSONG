@@ -787,6 +787,384 @@
     transition: 200ms var(--cubic-ease-out);
 }
 
+/* ========== BACKGROUND MODAL ========== */
+.background-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.background-modal.open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.background-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+}
+
+.background-modal-content {
+    position: relative;
+    z-index: 1;
+    background: var(--background-color);
+    color: var(--background-text-color);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    max-width: 700px;
+    width: 95%;
+    max-height: 95vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .background-modal-content {
+    background: #111;
+}
+
+.background-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--surface-border);
+    margin-bottom: 1.5rem;
+}
+
+.background-modal-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.background-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+    color: var(--background-text-color);
+}
+
+.background-modal-close:hover {
+    background: var(--surface-hover);
+}
+
+.background-modal-close .material-symbols-outlined {
+    font-size: 1.5rem;
+}
+
+/* Canvas */
+.bg-canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.bg-canvas-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1 / 1;
+    background: #ffffff;
+    border-radius: 1.2rem;
+    overflow: hidden;
+    border: 2px solid var(--surface-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .bg-canvas-container {
+    background: #000000;
+    border-color: #333;
+}
+
+.bg-canvas-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    display: none;
+}
+
+.bg-song-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 70%;
+    max-width: 300px;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+    background: transparent;
+    padding: 0;
+    transition: width 0.2s ease;
+    pointer-events: none;
+}
+
+.bg-song-overlay .song-image {
+    width: 100% !important;
+    transform: scale(1) !important;
+    border-radius: 0.75rem;
+    padding: 0.8rem;
+    pointer-events: none;
+}
+
+.bg-credit-text {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.bg-credit-text.hidden {
+    opacity: 0;
+}
+
+/* Controls */
+.bg-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.bg-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 100px;
+}
+
+.bg-control-group label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-gray);
+}
+
+.bg-button-group {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.bg-btn-option {
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    border: 2px solid var(--surface-border);
+    border-radius: 8px;
+    background: var(--surface-bg);
+    color: var(--background-text-color);
+    font-family: "Poppins", sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.bg-btn-option:hover {
+    border-color: var(--primary-color);
+    background: var(--surface-hover);
+}
+
+.bg-btn-option.active {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: var(--primary-text-color);
+}
+
+.bg-btn-option .material-symbols-outlined {
+    font-size: 0.8rem;
+    display: block;
+    margin: 0 auto 2px;
+}
+
+.dark-mode .bg-btn-option {
+    border-color: #333;
+    background: #111;
+    color: #fff;
+}
+
+.dark-mode .bg-btn-option:hover {
+    border-color: #fff;
+    background: #222;
+}
+
+.dark-mode .bg-btn-option.active {
+    border-color: #fff;
+    background: #fff;
+    color: #000;
+}
+
+.bg-upload-btn {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.bg-upload-btn input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.bg-size-control {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.bg-size-control input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--surface-border);
+    border-radius: 2px;
+    outline: none;
+}
+
+.bg-size-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+}
+
+.bg-size-value {
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 32px;
+    text-align: center;
+    color: var(--text-gray);
+}
+
+/* Download Button */
+.bg-download-container {
+    display: flex;
+    justify-content: center;
+}
+
+.bg-download-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--primary-color, #000000);
+    color: var(--primary-text-color, #ffffff);
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+}
+
+.bg-download-btn:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
+}
+
+.bg-download-btn .material-symbols-outlined {
+    font-size: 1.2rem;
+    color: var(--primary-text-color, #ffffff);
+}
+
+.bg-download-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .background-modal-content {
+        padding: 1.2rem;
+        border-radius: 1rem;
+        max-height: 98vh;
+    }
+    
+    .bg-canvas-container {
+        max-width: 100%;
+    }
+    
+    .bg-controls {
+        gap: 0.6rem;
+    }
+    
+    .bg-control-group {
+        min-width: 80px;
+    }
+    
+    .bg-btn-option {
+        font-size: 0.55rem;
+        padding: 0.3rem 0.4rem;
+    }
+    
+    .bg-btn-option .material-symbols-outlined {
+        font-size: 0.7rem;
+    }
+    
+    .bg-download-btn {
+        font-size: 0.75rem;
+        padding: 0.6rem 1.5rem;
+    }
+}
+
 /* ========== RESPONSIVE MOBILE UNTUK WIZARD ========== */
 @media (max-width: 768px) {
     .search-form {
