@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHOSONG - Edit Background</title>
+    <title>CHOSONG Background</title>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="main.css">
@@ -107,11 +107,15 @@
             width: 100%;
             max-width: 600px;
             aspect-ratio: 1 / 1;
-            background: var(--surface-bg, #ffffff);
+            background: #ffffff;
             border-radius: 1.5rem;
             overflow: hidden;
             border: 2px solid var(--surface-border);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .canvas-container {
+            background: #000000;
         }
 
         /* Background image (user upload) */
@@ -123,6 +127,7 @@
             height: 100%;
             object-fit: cover;
             z-index: 1;
+            display: none;
         }
 
         /* Song image overlay di tengah */
@@ -136,8 +141,14 @@
             max-width: 320px;
             border-radius: 1rem;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-            background: var(--surface-bg, #ffffff);
+            background: #ffffff;
             padding: 0.8rem;
+            transition: width 0.2s ease;
+        }
+
+        .dark-mode .canvas-container .song-image-overlay {
+            background: #000000;
+            box-shadow: 0 4px 24px rgba(255, 255, 255, 0.1);
         }
 
         .canvas-container .song-image-overlay .song-image {
@@ -145,6 +156,11 @@
             transform: scale(1) !important;
             border-radius: 0.75rem;
             padding: 0.8rem;
+            background-color: #ffffff;
+        }
+
+        .dark-mode .canvas-container .song-image-overlay .song-image {
+            background-color: #000000;
         }
 
         /* Credit text di bawah */
@@ -157,18 +173,19 @@
             font-size: 0.6rem;
             font-weight: 500;
             letter-spacing: 0.5px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
             background: rgba(0, 0, 0, 0.3);
             padding: 4px 12px;
             border-radius: 20px;
             backdrop-filter: blur(4px);
-            opacity: 0;
+            opacity: 1;
             transition: opacity 0.3s;
+            pointer-events: none;
         }
 
-        .canvas-container:hover .credit-text {
-            opacity: 1;
+        .canvas-container .credit-text.hidden {
+            opacity: 0;
         }
 
         /* ========== CONTROLS ========== */
@@ -187,11 +204,11 @@
             flex-direction: column;
             gap: 0.5rem;
             flex: 1;
-            min-width: 140px;
+            min-width: 120px;
         }
 
         .control-group label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -200,18 +217,18 @@
 
         .control-group .button-group {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .control-group .btn-option {
             flex: 1;
-            padding: 0.6rem 0.8rem;
+            padding: 0.5rem 0.6rem;
             border: 2px solid var(--surface-border);
             border-radius: 10px;
             background: var(--surface-bg);
             color: var(--background-text-color);
             font-family: "Poppins", sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -230,9 +247,26 @@
         }
 
         .control-group .btn-option .material-symbols-outlined {
-            font-size: 1rem;
+            font-size: 0.9rem;
             display: block;
             margin: 0 auto 2px;
+        }
+
+        .dark-mode .control-group .btn-option {
+            border-color: #333;
+            background: #111;
+            color: #fff;
+        }
+
+        .dark-mode .control-group .btn-option:hover {
+            border-color: #fff;
+            background: #222;
+        }
+
+        .dark-mode .control-group .btn-option.active {
+            border-color: #fff;
+            background: #fff;
+            color: #000;
         }
 
         /* Upload button */
@@ -288,28 +322,6 @@
             color: var(--text-gray);
         }
 
-        /* ========== DARK MODE OVERRIDES ========== */
-        .dark-mode .canvas-container {
-            border-color: #333;
-        }
-
-        .dark-mode .control-group .btn-option {
-            border-color: #333;
-            background: #111;
-            color: #fff;
-        }
-
-        .dark-mode .control-group .btn-option:hover {
-            border-color: #fff;
-            background: #222;
-        }
-
-        .dark-mode .control-group .btn-option.active {
-            border-color: #fff;
-            background: #fff;
-            color: #000;
-        }
-
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             .edit-page {
@@ -335,6 +347,7 @@
 
             .canvas-container .song-image-overlay {
                 width: 80%;
+                padding: 0.6rem;
             }
 
             .controls {
@@ -347,17 +360,18 @@
 
             .control-group .btn-option {
                 font-size: 0.65rem;
-                padding: 0.4rem 0.6rem;
+                padding: 0.4rem 0.5rem;
             }
 
             .control-group .btn-option .material-symbols-outlined {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
         }
 
         @media (max-width: 480px) {
             .canvas-container .song-image-overlay {
                 width: 85%;
+                padding: 0.4rem;
             }
 
             .edit-header {
@@ -434,8 +448,8 @@
                                 </div>
                             </div>
                             <div class="lyrics" contenteditable="true">
-                                <div class="lyric-line">Lyrics will appear here</div>
-                                <div class="lyric-line">Select your favorite lines</div>
+                                <div class="lyric-line">Select your favorite lyrics</div>
+                                <div class="lyric-line">Or type your own here</div>
                             </div>
                         </div>
                     </div>
@@ -471,12 +485,12 @@
                         <label>Image Size</label>
                         <div class="size-control">
                             <span class="size-value" id="size-label">70%</span>
-                            <input type="range" id="size-slider" min="40" max="90" value="70">
+                            <input type="range" id="size-slider" min="40" max="90" value="70" step="1">
                         </div>
                     </div>
 
                     <!-- Show Credit -->
-                    <div class="control-group" style="flex: 0.5; min-width: 100px;">
+                    <div class="control-group" style="flex: 0.5; min-width: 80px;">
                         <label>Credit</label>
                         <div class="button-group">
                             <button class="btn-option active" data-credit="show">
@@ -532,6 +546,8 @@
 
     <script>
         (function() {
+            'use strict';
+
             // ========== THEME TOGGLE ==========
             const checkbox = document.getElementById('theme-toggle-checkbox');
             const headerLogo = document.getElementById('header-logo-img');
@@ -551,6 +567,7 @@
                     if (checkbox) checkbox.checked = false;
                 }
                 updateLogos(isDark);
+                updateCanvasBackground();
             }
 
             function getInitialTheme() {
@@ -571,97 +588,101 @@
                 });
             }
 
+            // ========== DOM REFS ==========
+            const container = document.getElementById('canvas-container');
+            const bgImage = document.getElementById('bg-image');
+            const songOverlay = document.getElementById('song-overlay');
+            const songImageContainer = document.getElementById('song-image-container');
+            const creditText = document.getElementById('credit-text');
+
             // ========== LOAD SONG IMAGE FROM localStorage ==========
             function loadSongImage() {
-                const savedData = localStorage.getItem('chosong_last_image');
-                if (savedData) {
-                    try {
-                        const data = JSON.parse(savedData);
-                        const container = document.getElementById('song-image-container');
-
-                        // Album image
-                        const albumImg = container.querySelector('.screen4-album-img');
-                        if (albumImg && data.albumCover) {
-                            albumImg.src = data.albumCover;
-                            const wrapper = container.querySelector('.album-image-wrapper');
-                            if (wrapper) {
-                                wrapper.style.backgroundImage = `url(${data.albumCover})`;
-                                wrapper.style.backgroundSize = 'cover';
-                                wrapper.style.backgroundPosition = 'center';
-                            }
-                        }
-
-                        // Name
-                        const nameDiv = container.querySelector('.name');
-                        if (nameDiv && data.name) {
-                            nameDiv.textContent = data.name;
-                        }
-
-                        // Authors
-                        const authorsDiv = container.querySelector('.authors');
-                        if (authorsDiv && data.authors) {
-                            authorsDiv.textContent = data.authors;
-                        }
-
-                        // Lyrics
-                        const lyricsDiv = container.querySelector('.lyrics');
-                        if (lyricsDiv && data.lyrics) {
-                            lyricsDiv.innerHTML = data.lyrics;
-                        }
-
-                        // Warna
-                        if (data.color) {
-                            const songImage = container.querySelector('.song-image');
-                            if (songImage) {
-                                songImage.style.backgroundColor = data.color;
-                                songImage.style.backgroundImage = '';
-                            }
-                        }
-
-                        console.log('✅ Song image loaded from localStorage');
-                    } catch (e) {
-                        console.error('Failed to load song image:', e);
+                try {
+                    const savedData = localStorage.getItem('chosong_last_image');
+                    if (!savedData) {
+                        console.log('No saved song image found, using defaults');
+                        return;
                     }
-                } else {
-                    console.log('ℹ️ No saved song image found, using defaults');
+
+                    const data = JSON.parse(savedData);
+                    console.log('Loading song image from localStorage');
+
+                    // Album image
+                    const albumImg = songImageContainer.querySelector('.screen4-album-img');
+                    const albumWrapper = songImageContainer.querySelector('.album-image-wrapper');
+                    if (albumImg && data.albumCover && data.albumCover !== '') {
+                        albumImg.src = data.albumCover;
+                        albumImg.style.display = 'block';
+                        if (albumWrapper) {
+                            albumWrapper.style.backgroundImage = `url(${data.albumCover})`;
+                            albumWrapper.style.backgroundSize = 'cover';
+                            albumWrapper.style.backgroundPosition = 'center';
+                        }
+                    }
+
+                    // Name
+                    const nameDiv = songImageContainer.querySelector('.name');
+                    if (nameDiv && data.name) {
+                        nameDiv.textContent = data.name;
+                    }
+
+                    // Authors
+                    const authorsDiv = songImageContainer.querySelector('.authors');
+                    if (authorsDiv && data.authors) {
+                        authorsDiv.textContent = data.authors;
+                    }
+
+                    // Lyrics
+                    const lyricsDiv = songImageContainer.querySelector('.lyrics');
+                    if (lyricsDiv && data.lyrics) {
+                        lyricsDiv.innerHTML = data.lyrics;
+                    }
+
+                    // Warna song image
+                    const songImage = songImageContainer.querySelector('.song-image');
+                    if (songImage && data.color) {
+                        songImage.style.backgroundColor = data.color;
+                        songImage.style.backgroundImage = '';
+                    }
+
+                    console.log('✅ Song image loaded successfully');
+                } catch (e) {
+                    console.error('Failed to load song image:', e);
                 }
             }
 
             // ========== SAVE SONG IMAGE TO localStorage ==========
             function saveSongImage() {
-                const container = document.getElementById('song-image-container');
-                const songImage = container.querySelector('.song-image');
-
-                const albumImg = container.querySelector('.screen4-album-img');
-                const nameDiv = container.querySelector('.name');
-                const authorsDiv = container.querySelector('.authors');
-                const lyricsDiv = container.querySelector('.lyrics');
-
-                const data = {
-                    albumCover: albumImg ? albumImg.src : '',
-                    name: nameDiv ? nameDiv.textContent : 'Song Title',
-                    authors: authorsDiv ? authorsDiv.textContent : 'Artist Name',
-                    lyrics: lyricsDiv ? lyricsDiv.innerHTML : '',
-                    color: songImage ? songImage.style.backgroundColor : '#ffffff'
-                };
-
                 try {
+                    const albumImg = songImageContainer.querySelector('.screen4-album-img');
+                    const nameDiv = songImageContainer.querySelector('.name');
+                    const authorsDiv = songImageContainer.querySelector('.authors');
+                    const lyricsDiv = songImageContainer.querySelector('.lyrics');
+                    const songImage = songImageContainer.querySelector('.song-image');
+
+                    const data = {
+                        albumCover: albumImg ? albumImg.src : '',
+                        name: nameDiv ? nameDiv.textContent : 'Song Title',
+                        authors: authorsDiv ? authorsDiv.textContent : 'Artist Name',
+                        lyrics: lyricsDiv ? lyricsDiv.innerHTML : '',
+                        color: songImage ? songImage.style.backgroundColor : '#ffffff'
+                    };
+
                     localStorage.setItem('chosong_last_image', JSON.stringify(data));
-                    console.log('✅ Song image saved to localStorage');
                 } catch (e) {
                     console.error('Failed to save song image:', e);
                 }
             }
 
-            // ========== SAVE ON CONTENT EDIT ==========
+            // ========== AUTO-SAVE ON CONTENT EDIT ==========
             document.querySelectorAll('#song-image-container [contenteditable]').forEach(el => {
                 el.addEventListener('input', saveSongImage);
             });
 
             // ========== UPLOAD FOTO ALBUM ==========
-            const fileInput = document.querySelector('.song-image .file-input');
-            const albumWrapper = document.querySelector('.song-image .album-image-wrapper');
-            const albumImg = document.querySelector('.song-image .screen4-album-img');
+            const fileInput = songImageContainer.querySelector('.file-input');
+            const albumWrapper = songImageContainer.querySelector('.album-image-wrapper');
+            const albumImg = songImageContainer.querySelector('.screen4-album-img');
 
             if (fileInput) {
                 fileInput.addEventListener('change', function(e) {
@@ -672,7 +693,6 @@
                     reader.onload = function(ev) {
                         const img = new Image();
                         img.onload = function() {
-                            // Crop 1:1
                             const canvas = document.createElement('canvas');
                             const size = Math.min(img.width, img.height);
                             canvas.width = size;
@@ -701,12 +721,27 @@
                 });
             }
 
+            // ========== UPDATE CANVAS BACKGROUND ==========
+            function updateCanvasBackground() {
+                const activeBg = document.querySelector('[data-bg].active');
+                if (!activeBg) return;
+
+                const bg = activeBg.dataset.bg;
+                if (bg === 'white') {
+                    bgImage.style.display = 'none';
+                    container.style.backgroundColor = '#ffffff';
+                    bgImage.src = '';
+                } else if (bg === 'black') {
+                    bgImage.style.display = 'none';
+                    container.style.backgroundColor = '#000000';
+                    bgImage.src = '';
+                }
+            }
+
             // ========== BACKGROUND CONTROLS ==========
-            const bgImage = document.getElementById('bg-image');
             const bgButtons = document.querySelectorAll('[data-bg]');
             const bgUpload = document.getElementById('bg-upload');
 
-            // Background buttons
             bgButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     bgButtons.forEach(b => b.classList.remove('active'));
@@ -715,17 +750,16 @@
                     const bg = this.dataset.bg;
                     if (bg === 'white') {
                         bgImage.style.display = 'none';
-                        document.getElementById('canvas-container').style.backgroundColor = '#ffffff';
+                        container.style.backgroundColor = '#ffffff';
                         bgImage.src = '';
                     } else if (bg === 'black') {
                         bgImage.style.display = 'none';
-                        document.getElementById('canvas-container').style.backgroundColor = '#000000';
+                        container.style.backgroundColor = '#000000';
                         bgImage.src = '';
                     }
                 });
             });
 
-            // Upload background photo
             if (bgUpload) {
                 bgUpload.addEventListener('change', function(e) {
                     const file = e.target.files[0];
@@ -735,9 +769,8 @@
                     reader.onload = function(ev) {
                         bgImage.src = ev.target.result;
                         bgImage.style.display = 'block';
-                        document.getElementById('canvas-container').style.backgroundColor = 'transparent';
+                        container.style.backgroundColor = 'transparent';
 
-                        // Update button state
                         bgButtons.forEach(b => b.classList.remove('active'));
                         const photoBtn = document.querySelector('.upload-btn');
                         if (photoBtn) photoBtn.classList.add('active');
@@ -750,7 +783,6 @@
             // ========== SIZE SLIDER ==========
             const sizeSlider = document.getElementById('size-slider');
             const sizeLabel = document.getElementById('size-label');
-            const songOverlay = document.getElementById('song-overlay');
 
             if (sizeSlider && songOverlay) {
                 sizeSlider.addEventListener('input', function() {
@@ -761,7 +793,6 @@
             }
 
             // ========== CREDIT CONTROLS ==========
-            const creditText = document.getElementById('credit-text');
             const creditButtons = document.querySelectorAll('[data-credit]');
 
             creditButtons.forEach(btn => {
@@ -771,45 +802,60 @@
 
                     const action = this.dataset.credit;
                     if (action === 'show') {
-                        creditText.style.opacity = '1';
+                        creditText.classList.remove('hidden');
                     } else {
-                        creditText.style.opacity = '0';
+                        creditText.classList.add('hidden');
                     }
                 });
             });
 
-            // ========== DOWNLOAD ==========
+            // ========== DOWNLOAD - UKURAN 800x800 ==========
             document.getElementById('download-edit').addEventListener('click', function() {
-                const container = document.getElementById('canvas-container');
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Generating...';
+                btn.disabled = true;
 
-                // Tampilkan credit dulu
-                const wasHidden = creditText.style.opacity === '0';
-                if (wasHidden) creditText.style.opacity = '1';
+                const canvasContainer = document.getElementById('canvas-container');
 
-                html2canvas(container, {
-                    scale: 2,
+                const wasHidden = creditText.classList.contains('hidden');
+                if (wasHidden) creditText.classList.remove('hidden');
+
+                html2canvas(canvasContainer, {
+                    scale: 1.33,  // 600 x 1.33 = 798 ≈ 800px
                     backgroundColor: null,
                     useCORS: true,
-                    allowTaint: false
+                    allowTaint: false,
+                    logging: false
                 }).then(canvas => {
                     canvas.toBlob(function(blob) {
                         saveAs(blob, 'chosong-background.png');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        if (wasHidden) creditText.classList.add('hidden');
                     });
-                    if (wasHidden) creditText.style.opacity = '0';
                 }).catch(err => {
                     console.error('Download failed:', err);
                     alert('Failed to download image');
-                    if (wasHidden) creditText.style.opacity = '0';
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    if (wasHidden) creditText.classList.add('hidden');
                 });
             });
 
             // ========== LOAD ON PAGE LOAD ==========
-            loadSongImage();
+            setTimeout(() => {
+                loadSongImage();
+                updateCanvasBackground();
+                if (sizeSlider) {
+                    songOverlay.style.width = sizeSlider.value + '%';
+                }
+            }, 100);
 
-            // ========== SAVE PERIODICALLY ==========
-            setInterval(saveSongImage, 5000);
+            setInterval(saveSongImage, 10000);
 
-            console.log('🎨 Edit.html loaded successfully');
+            console.log('🎨 Edit.html loaded successfully (800x800 output)');
+
         })();
     </script>
 
