@@ -7,15 +7,15 @@ const DOWNLOADING = "Downloading lyrics image...";
 const NO_LYRICS_FOUND = "No lyrics found<br>You can still type your own lyrics by clicking here :)";
 const NO_LYRICS_SELECTED = "No lyrics selected<br>You can still type your own lyrics by clicking here :)";
 
-// WARNA
+// WARNA BARU - tambah #b5ffc0
 const COLORS = [
-    "#ffffff",
-    "#2e2928",
-    "#ffa9a3",
-    "#cc0e00",
-    "#83b8fc",
-    "#fcd683",
-    "#b5ffc0",
+    "#ffffff",  // Putih
+    "#2e2928",  // Coklat gelap
+    "#ffa9a3",  // Peach/pink muda
+    "#cc0e00",  // Merah
+    "#83b8fc",  // Biru muda
+    "#fcd683",  // Kuning
+    "#b5ffc0",  // Hijau mint (BARU)
 ];
 
 class DOMHandler {
@@ -25,6 +25,7 @@ class DOMHandler {
         this.selectedSongIndex = null;
         this.usedDirectLink = false;
         this.isLoadingLyrics = false;
+        this.isTranslating = false; // Untuk mencegah spam klik
 
         // DOM Elements
         this.errorTexts = document.querySelectorAll(".error");
@@ -57,8 +58,6 @@ class DOMHandler {
         this.albumImageWrapper = document.querySelector(".song-image .album-image-wrapper");
         this.screen4AlbumImg = document.querySelector(".song-image .screen4-album-img");
 
-        this.setListeners();
-        this.populateColorSelection();
     }
 
     setListeners() {
@@ -163,41 +162,13 @@ class DOMHandler {
             });
         });
     }
-    
-            if (lyrics === null) throw Error("Lyrics not found");
-            
-        } catch (error) {
-            console.error("Lyrics fetch error:", error);
-            this.hideSearching();
-            this.isLoadingLyrics = false;
-            
-            // Tampilkan pesan tidak ada lirik
-            const noLyricsMsg = document.createElement("div");
-            noLyricsMsg.classList.add("no-lyrics-message");
-            noLyricsMsg.innerHTML = "No lyrics found.<br>You can type your own lyrics in the next step.";
-            noLyricsMsg.style.padding = "20px";
-            noLyricsMsg.style.textAlign = "center";
-            noLyricsMsg.style.fontSize = "0.9rem";
-            noLyricsMsg.style.color = "var(--text-gray)";
-            this.lineSelection.append(noLyricsMsg);
-            
-            song.lyrics = [];
-            this.isLoadingLyrics = false;
-            return;
-        }
 
-        this.hideSearching();
-        this.isLoadingLyrics = false;
-        song.loadLyrics(lyrics);
-        this.populateLineSelection();
-    }
-
-    // ========== SISANYA SAMA ==========
     uploadAlbumImage(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
+                // Crop 1:1
                 const canvas = document.createElement('canvas');
                 const size = Math.min(img.width, img.height);
                 canvas.width = size;
@@ -226,15 +197,21 @@ class DOMHandler {
 
     populateColorSelection() {
         if (!this.colorSelection) return;
+
+        // Hapus warna lama
         this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
 
+        // Tambahkan warna baru dari COLORS
         COLORS.forEach((color) => {
             const element = document.createElement("div");
             element.classList.add("select-color");
             element.style.backgroundColor = color;
+            
+            // Tambahkan border untuk warna putih agar terlihat
             if (color === "#ffffff") {
                 element.style.border = "2px solid #ccc";
             }
+            
             element.textContent = ".";
             element.style.color = "transparent";
 
@@ -314,6 +291,7 @@ class DOMHandler {
 
     populateSongSelection() {
         if (!this.songSelection) return;
+
         this.songSelection.querySelectorAll(".select-song:not(.cloneable)").forEach(el => el.remove());
 
         this.songs.forEach((song, index) => {
@@ -336,6 +314,48 @@ class DOMHandler {
         }, SELECTION_ANIMATION_DELAY);
     }
 
+    async findLyrics() {
+        if (this.isLoadingLyrics) return;
+        this.isLoadingLyrics = true;
+
+        this.lineSelection.innerHTML = "";
+        this.displayScreen(3);
+        this.displaySongInfo();
+        this.displaySearching(SEARCHING_FOR_LYRICS);
+
+        const song = this.songs[this.selectedSongIndex];
+        const artists = song.artists.map(a => a.name);
+        let lyrics = null;
+
+        try {
+            const promises = artists.map(artist => 
+                this.fetcher.getSongLyrics(artist, song.name)
+            );
+            const results = await Promise.all(promises);
+            
+            for (const result of results) {
+                if (result && result.plainLyrics) {
+                    lyrics = result;
+                    break;
+                }
+            }
+            
+            if (lyrics === null) throw Error("Lyrics not found");
+        } catch (error) {
+            this.hideSearching();
+            this.isLoadingLyrics = false;
+            if (document.querySelector(".final-options").classList.contains("hidden")) {
+                this.displaySongImage();
+            }
+            return console.error(error);
+        }
+
+        this.hideSearching();
+        this.isLoadingLyrics = false;
+        song.loadLyrics(lyrics);
+        this.populateLineSelection();
+    }
+
     displaySongInfo() {
         const song = this.songs[this.selectedSongIndex];
         if (this.songInfoCover) this.songInfoCover.src = song.albumCoverUrl;
@@ -350,7 +370,7 @@ class DOMHandler {
         if (!lyrics || lyrics.length === 0) {
             const noLyricsMsg = document.createElement("div");
             noLyricsMsg.classList.add("no-lyrics-message");
-            noLyricsMsg.innerHTML = "📝 No lyrics found.<br>You can type your own lyrics in the next step.";
+            noLyricsMsg.textContent = "No lyrics found. You can still proceed to customize your image.";
             noLyricsMsg.style.padding = "20px";
             noLyricsMsg.style.textAlign = "center";
             noLyricsMsg.style.fontSize = "0.9rem";
