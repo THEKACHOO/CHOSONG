@@ -926,7 +926,7 @@
 .translate-container {
     display: flex;
     justify-content: center;
-    margin: 12px 0 16px;
+    margin: 8px 0 16px;
     padding: 0 8px;
 }
 
@@ -934,49 +934,87 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
-    background: var(--primary-color, #000000);
-    color: var(--primary-text-color, #ffffff);
+    padding: 10px 24px;
     border: none;
     border-radius: 12px;
     font-family: "Poppins", sans-serif;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     width: 100%;
-    max-width: 280px;
+    max-width: 200px;
     justify-content: center;
+    letter-spacing: 0.5px;
 }
 
-.translate-button:hover {
-    transform: scale(1.02);
-    opacity: 0.9;
+/* Mode Light */
+.translate-button.light-translate {
+    background: #000000;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+.translate-button.light-translate .material-symbols-outlined {
+    color: #ffffff;
+}
+
+.translate-button.light-translate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.translate-button.light-translate:active {
+    transform: translateY(0px);
+}
+
+/* Mode Dark */
+.translate-button.dark-translate {
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+}
+
+.translate-button.dark-translate .material-symbols-outlined {
+    color: #000000;
+}
+
+.translate-button.dark-translate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+}
+
+.translate-button.dark-translate:active {
+    transform: translateY(0px);
+}
+
+/* Disabled state */
 .translate-button:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
+    transform: none !important;
 }
 
 .translate-button .material-symbols-outlined {
-    color: var(--primary-text-color, #ffffff);
     font-size: 1.2rem;
 }
 
+/* Animasi spin untuk loading */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.translate-button .material-symbols-outlined:has(+ span:contains("Translating")) {
+    animation: spin 1s linear infinite;
+}
+
+/* Line yang sudah di-translate */
 .select-line.translated {
-    background: rgba(131, 184, 252, 0.15) !important;
+    background: rgba(131, 184, 252, 0.12) !important;
     border-left: 3px solid #83b8fc !important;
-}
-
-.dark-mode .translate-button {
-    background: var(--primary-color, #ffffff);
-    color: var(--primary-text-color, #000000);
-}
-
-.dark-mode .translate-button .material-symbols-outlined {
-    color: var(--primary-text-color, #000000);
+    padding-left: 12px;
+    transition: all 0.3s ease;
 }
 
 /* Responsive */
@@ -984,11 +1022,10 @@
     .translate-button {
         font-size: 0.75rem;
         padding: 8px 16px;
-        max-width: 220px;
+        max-width: 160px;
     }
     
     .translate-button .material-symbols-outlined {
         font-size: 1rem;
     }
 }
-    }
