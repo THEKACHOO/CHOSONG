@@ -256,25 +256,24 @@ class DOMHandler {
         }
 
         // WIDTH SLIDER - SAMA DENGAN SCREEN 4
-        if (this.bgWidthSlider) {
-            this.bgWidthSlider.addEventListener('input', () => {
-                const val = this.bgWidthSlider.value;
-                this.bgWidthLabel.textContent = val + 'px';
-                // Update width di song image overlay
-                const songImage = this.bgSongOverlay ? this.bgSongOverlay.querySelector('.song-image') : null;
-                if (songImage) {
-                    songImage.style.width = val + 'px';
-                    songImage.style.maxWidth = '100%';
-                }
-                // Sync ke Screen 4 juga
-                if (this.widthSlider) {
-                    this.widthSlider.value = val;
-                    this.widthValue.textContent = val + 'px';
-                    this.setSongImageWidth(val);
-                }
-            });
+if (this.bgWidthSlider) {
+    this.bgWidthSlider.addEventListener('input', () => {
+        const val = this.bgWidthSlider.value;
+        this.bgWidthLabel.textContent = val + 'px';
+        // Update width di song image overlay
+        const songImage = this.bgSongOverlay ? this.bgSongOverlay.querySelector('.song-image') : null;
+        if (songImage) {
+            songImage.style.width = val + 'px';
+            songImage.style.maxWidth = '100%';
         }
-
+        // Sync ke Screen 4 juga
+        if (this.widthSlider) {
+            this.widthSlider.value = val;
+            this.widthValue.textContent = val + 'px';
+            this.setSongImageWidth(val);
+        }
+    });
+}
         if (this.bgUploadInput) {
             this.bgUploadInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
