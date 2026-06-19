@@ -158,6 +158,19 @@ class DOMHandler {
                 if (this.widthValue) {
                     this.widthValue.textContent = `${width}px`;
                 }
+                // Sync ke modal jika terbuka
+                if (this.bgWidthSlider && this.bgModal && this.bgModal.classList.contains('open')) {
+                    this.bgWidthSlider.value = width;
+                    this.bgWidthLabel.textContent = width + 'px';
+                    const overlay = this.bgSongOverlay;
+                    if (overlay) {
+                        const songImage = overlay.querySelector('.song-image');
+                        if (songImage) {
+                            songImage.style.width = width + 'px';
+                            songImage.style.maxWidth = '100%';
+                        }
+                    }
+                }
             });
         }
 
@@ -256,24 +269,34 @@ class DOMHandler {
         }
 
         // WIDTH SLIDER - SAMA DENGAN SCREEN 4
-if (this.bgWidthSlider) {
-    this.bgWidthSlider.addEventListener('input', () => {
-        const val = this.bgWidthSlider.value;
-        this.bgWidthLabel.textContent = val + 'px';
-        // Update width di song image overlay
-        const songImage = this.bgSongOverlay ? this.bgSongOverlay.querySelector('.song-image') : null;
-        if (songImage) {
-            songImage.style.width = val + 'px';
-            songImage.style.maxWidth = '100%';
+        if (this.bgWidthSlider) {
+            this.bgWidthSlider.addEventListener('input', () => {
+                const val = this.bgWidthSlider.value;
+                this.bgWidthLabel.textContent = val + 'px';
+                
+                // Update width di song image overlay
+                const overlay = this.bgSongOverlay;
+                if (overlay) {
+                    const songImage = overlay.querySelector('.song-image');
+                    if (songImage) {
+                        songImage.style.width = val + 'px';
+                        songImage.style.maxWidth = '100%';
+                    }
+                }
+                
+                // Sync ke Screen 4
+                if (this.widthSlider) {
+                    this.widthSlider.value = val;
+                    if (this.widthValue) {
+                        this.widthValue.textContent = val + 'px';
+                    }
+                    if (this.songImage) {
+                        this.songImage.style.width = val + 'px';
+                    }
+                }
+            });
         }
-        // Sync ke Screen 4 juga
-        if (this.widthSlider) {
-            this.widthSlider.value = val;
-            this.widthValue.textContent = val + 'px';
-            this.setSongImageWidth(val);
-        }
-    });
-}
+
         if (this.bgUploadInput) {
             this.bgUploadInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
@@ -366,15 +389,27 @@ if (this.bgWidthSlider) {
         this.bgModal.classList.add('open');
         document.body.style.overflow = 'hidden';
         
+        // Update overlay
+        this.updateBgOverlay();
+        this.updateBgCanvas();
+        
         // Sync width dari Screen 4 ke modal
         if (this.bgWidthSlider && this.widthSlider) {
             const screen4Width = this.widthSlider.value;
             this.bgWidthSlider.value = screen4Width;
             this.bgWidthLabel.textContent = screen4Width + 'px';
+            
+            // Paksa update width di song image
+            const overlay = this.bgSongOverlay;
+            if (overlay) {
+                const songImage = overlay.querySelector('.song-image');
+                if (songImage) {
+                    songImage.style.width = screen4Width + 'px';
+                    songImage.style.maxWidth = '100%';
+                }
+            }
         }
         
-        this.updateBgOverlay();
-        this.updateBgCanvas();
         // Reset zoom ke 100%
         if (this.bgZoomSlider) {
             this.bgZoomSlider.value = '100';
