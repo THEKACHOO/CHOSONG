@@ -85,42 +85,42 @@
         </section>
 
         <!-- SCREEN 3: Select lines -->
-        <section class="lyrics-image-screen hidden lyrics-results" data-number="3">
-            <div class="screen-wrapper">
-                <div class="song-info-display">
-                    <img src="" alt="album cover" class="song-info-cover">
-                    <div class="song-info-text">
-                        <div class="song-info-name"></div>
-                        <div class="song-info-artist"></div>
-                    </div>
-                </div>
-
-                <div class="line-navigation">
-                    <button class="line-nav-button" id="back-line">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                    </button>
-                    <h3 class="line-title">Select a Line</h3>
-                    <button class="line-nav-button" id="next-line">
-                        <span class="material-symbols-outlined">arrow_forward</span>
-                    </button>
-                </div>
-
-                <!-- TOMBOL TERJEMAH -->
-                <div class="translate-container">
-                    <button class="translate-button" id="translate-lyrics">
-                        <span class="material-symbols-outlined">translate</span>
-                        Translate to English
-                    </button>
-                </div>
-
-                <div class="lines-selection"></div>
-
-                <div class="searching hidden"></div>
+<section class="lyrics-image-screen hidden lyrics-results" data-number="3">
+    <div class="screen-wrapper">
+        <div class="song-info-display">
+            <img src="" alt="album cover" class="song-info-cover">
+            <div class="song-info-text">
+                <div class="song-info-name"></div>
+                <div class="song-info-artist"></div>
             </div>
-            <button class="fab hidden" id="lyrics-fab">
+        </div>
+
+        <div class="line-navigation">
+            <button class="line-nav-button" id="back-line">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h3 class="line-title">Select a Line</h3>
+            <button class="line-nav-button" id="next-line">
                 <span class="material-symbols-outlined">arrow_forward</span>
             </button>
-        </section>
+        </div>
+
+        <!-- TOMBOL TERJEMAH - Tambah kelas light-translate -->
+        <div class="translate-container">
+            <button class="translate-button light-translate" id="translate-lyrics">
+                <span class="material-symbols-outlined">translate</span>
+                Translate
+            </button>
+        </div>
+
+        <div class="lines-selection"></div>
+
+        <div class="searching hidden"></div>
+    </div>
+    <button class="fab hidden" id="lyrics-fab">
+        <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+</section>
 
         <!-- SCREEN 4: Final options -->
         <section class="lyrics-image-screen hidden final-options" data-number="4">
