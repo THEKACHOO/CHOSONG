@@ -7,17 +7,16 @@ const DOWNLOADING = "Downloading lyrics image...";
 const NO_LYRICS_FOUND = "No lyrics found<br>You can still type your own lyrics by clicking here :)";
 const NO_LYRICS_SELECTED = "No lyrics selected<br>You can still type your own lyrics by clicking here :)";
 
-// ========== INI SATU-SATUNYA YANG DIUBAH - WARNA BARU ==========
+// WARNA BARU
 const COLORS = [
-    "#ffffff",   // Putih
-    "#2e2928",   // Coklat gelap
-    "#ffa9a3",   // Peach/pink muda
-    "#cc0e00",   // Merah
-    "#83b8fc",   // Biru muda
-    "#fcd683",   // Kuning
-    "#b5ffc0",   // Hijau mint (BARU)
+    "#ffffff",
+    "#2e2928",
+    "#ffa9a3",
+    "#cc0e00",
+    "#83b8fc",
+    "#fcd683",
+    "#b5ffc0",
 ];
-// ========== SAMPAI SINI ==========
 
 class DOMHandler {
     constructor(fetcher) {
@@ -53,6 +52,11 @@ class DOMHandler {
         this.songImage = document.querySelector(".song-image");
         this.widthSlider = document.querySelector("#width-slider");
         this.widthValue = document.querySelector("#width-value");
+        
+        // TAMBAH INI - Upload foto
+        this.fileInput = document.querySelector(".song-image .file-input");
+        this.albumImageWrapper = document.querySelector(".song-image .album-image-wrapper");
+        this.screen4AlbumImg = document.querySelector(".song-image .screen4-album-img");
 
         this.setListeners();
         this.populateColorSelection();
@@ -141,6 +145,16 @@ class DOMHandler {
             });
         }
 
+        // TAMBAH INI - Upload foto
+        if (this.fileInput) {
+            this.fileInput.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.uploadAlbumImage(file);
+                }
+            });
+        }
+
         // Contenteditable paste as plain text
         document.querySelectorAll("[contenteditable]").forEach((field) => {
             field.addEventListener("paste", function(e) {
@@ -164,10 +178,41 @@ class DOMHandler {
         }
     }
 
+    // TAMBAH INI - Fungsi upload foto dengan crop 1:1
+    uploadAlbumImage(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const size = Math.min(img.width, img.height);
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const sx = (img.width - size) / 2;
+                const sy = (img.height - size) / 2;
+                ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+                
+                const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                if (this.screen4AlbumImg) {
+                    this.screen4AlbumImg.src = croppedDataUrl;
+                    this.screen4AlbumImg.style.display = 'block';
+                }
+                if (this.albumImageWrapper) {
+                    this.albumImageWrapper.style.backgroundImage = `url(${croppedDataUrl})`;
+                    this.albumImageWrapper.style.backgroundSize = 'cover';
+                    this.albumImageWrapper.style.backgroundPosition = 'center';
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        this.fileInput.value = '';
+    }
+
     populateColorSelection() {
         if (!this.colorSelection) return;
 
-        // Hapus warna lama
         this.colorSelection.querySelectorAll('.select-color:not(#custom-color)').forEach(el => el.remove());
 
         COLORS.forEach((color) => {
@@ -175,7 +220,6 @@ class DOMHandler {
             element.classList.add("select-color");
             element.style.backgroundColor = color;
             
-            // Border untuk warna putih agar terlihat
             if (color === "#ffffff") {
                 element.style.border = "2px solid #ccc";
             }
@@ -357,9 +401,15 @@ class DOMHandler {
     setSongImage() {
         const song = this.songs[this.selectedSongIndex];
         
-        const screen4Img = document.querySelector(".song-image .header .screen4-album-img");
-        if (screen4Img && song.albumCoverUrl) {
-            screen4Img.src = song.albumCoverUrl;
+        // TAMBAH INI - Set album image dari song
+        if (this.screen4AlbumImg && song.albumCoverUrl) {
+            this.screen4AlbumImg.src = song.albumCoverUrl;
+            this.screen4AlbumImg.style.display = 'block';
+            if (this.albumImageWrapper) {
+                this.albumImageWrapper.style.backgroundImage = `url(${song.albumCoverUrl})`;
+                this.albumImageWrapper.style.backgroundSize = 'cover';
+                this.albumImageWrapper.style.backgroundPosition = 'center';
+            }
         }
         
         const nameDiv = document.querySelector(".song-image .header .name");
