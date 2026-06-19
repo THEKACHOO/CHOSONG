@@ -1,0 +1,924 @@
+/* wizard.css - Khusus untuk komponen wizard dan screens */
+
+@keyframes search-indicator {
+    0% {
+        width: 20%;
+        left: 0%;
+        transform: translate(-200%, 0);
+    }
+
+    33% {
+        width: 50%;
+        left: 20%;
+        transform: translate(0%, 0);
+    }
+
+    66% {
+        width: 40%;
+        left: 60%;
+        transform: translate(0%, 0);
+    }
+
+    100% {
+        width: 10%;
+        left: 100%;
+        transform: translate(100%, 0);
+    }
+}
+
+.searching {
+    padding: 2rem 0 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.searching::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    background-color: var(--background-text-color);
+    height: 0.3rem;
+    opacity: 1;
+    transition: 100ms;
+    animation: search-indicator 1s linear infinite;
+}
+
+.searching.hidden {
+    padding: 0;
+    font-size: 0;
+}
+
+.searching.hidden::after {
+    opacity: 0;
+    height: 0;
+}
+
+.error {
+    background-color: var(--error-color);
+    color: var(--error-text-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: 250ms var(--cubic-ease-out);
+}
+
+.error.hidden {
+    margin-top: 0;
+    padding: 0;
+    font-size: 0;
+    transition: 150ms var(--cubic-ease-out);
+}
+
+/**
+ * Screens
+ */
+.lyrics-image-screen {
+    width: 100%;
+    overflow: hidden;
+    opacity: 1;
+    transition: width 500ms ease-in-out, opacity 300ms ease-in-out 200ms;
+}
+
+.lyrics-image-screen.hidden {
+    opacity: 0;
+    width: 0%;
+    transition: width 500ms ease-in-out, opacity 300ms;
+}
+
+.screen-wrapper {
+    width: 100vw;
+    min-height: calc(100vh - 8rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 500ms ease-in-out;
+}
+
+.hidden.left .screen-wrapper {
+    transform: translate(-100%, 0);
+}
+
+/* ========== SCREEN 1 - SEARCH ========== */
+.search-form header {
+    text-align: center;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 300px);
+}
+
+.search-form .screen-wrapper {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.main-title {
+    text-align: center;
+    margin: 0 0 32px 0;
+}
+
+.main-title h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--background-text-color);
+}
+
+.input-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: var(--surface-light-color);
+    color: var(--surface-text-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.tab-button:hover {
+    background: var(--surface-color);
+}
+
+.tab-button.active {
+    background: var(--primary-color);
+    color: var(--primary-text-color);
+}
+
+.tab-content {
+    display: none;
+    width: 100%;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.search-form form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.search-form form>input {
+    padding: 1rem;
+    border: 2px solid #000000;
+    border-radius: 0.5rem;
+    outline: none;
+    width: 80%;
+    max-width: 25rem;
+    background: var(--surface-bg);
+    color: var(--background-text-color);
+}
+
+.search-form form>button {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    outline: none;
+    font-weight: 600;
+    opacity: 1;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.search-form form>button:hover {
+    cursor: pointer;
+    padding: 1rem 3rem;
+}
+
+.search-form form>button:disabled {
+    font-size: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+/* ========== SCREEN 2 - SELECT SONG ========== */
+.song-selection-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.select-song-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 24px;
+    margin-top: 24px;
+    width: 100%;
+}
+
+.select-song-header .back-button {
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: 40px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--background-text-color);
+}
+
+.select-song-header .back-button:hover {
+    background: var(--surface-hover);
+    transform: scale(1.02);
+}
+
+.select-song-header .back-button span {
+    font-size: 24px;
+}
+
+.select-song-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--background-text-color);
+    margin: 0;
+}
+
+.header-spacer {
+    width: 40px;
+    visibility: hidden;
+}
+
+.search-results .song-selection {
+    display: flex;
+    justify-content: center;
+    row-gap: 2rem;
+    column-gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 2rem 1rem;
+    flex-wrap: wrap;
+}
+
+.select-song {
+    width: 30%;
+    min-width: 140px;
+    max-width: 160px;
+    padding: 1rem;
+    background-color: var(--surface-light-color);
+    border-radius: 0.5rem;
+    transition: scale 200ms var(--cubic-ease-out),
+        background-color 200ms var(--cubic-ease-out);
+}
+
+.select-song:hover {
+    cursor: pointer;
+    background-color: var(--surface-color);
+    scale: 1.05;
+}
+
+@media screen and (max-width: 450px) {
+    .search-results .song-selection {
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .select-song {
+        width: calc(50% - 0.5rem);
+        min-width: unset;
+        max-width: none;
+        padding: 0.75rem;
+    }
+}
+
+.select-song img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: center 0;
+    opacity: 1;
+    border-radius: 0.5rem;
+    background-image: url("https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png");
+    background-size: cover;
+    background-position: center;
+    color: transparent;
+    transition: scale 150ms var(--cubic-ease-out),
+        aspect-ratio 400ms var(--cubic-ease-out),
+        opacity 600ms var(--cubic-ease-out);
+}
+
+.select-song:hover img {
+    scale: 1.05;
+}
+
+.hidden .select-song img {
+    aspect-ratio: 10;
+    opacity: 0;
+    transition: aspect-ratio 400ms var(--cubic-ease-out) 100ms,
+        opacity 400ms var(--cubic-ease-out) 100ms;
+}
+
+.select-song .name {
+    font-weight: 700;
+    padding-top: 0.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: 300ms var(--cubic-ease-out);
+}
+
+@media screen and (max-width: 450px) {
+    .select-song .name {
+        font-size: 0.75rem;
+        padding-top: 0.35rem;
+    }
+    
+    .select-song .authors {
+        font-size: 0.65rem;
+    }
+}
+
+.hidden .select-song .name {
+    font-size: 0;
+    padding-top: 0;
+    transition: 300ms var(--cubic-ease-out) 100ms;
+}
+
+.select-song .authors {
+    font-weight: 600;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: 300ms var(--cubic-ease-out);
+}
+
+.hidden .select-song .authors {
+    font-size: 0;
+    transition: 300ms var(--cubic-ease-out) 100ms;
+}
+
+/* ========== SCREEN 3 - SELECT LINES ========== */
+.lyrics-results .screen-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.line-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.line-nav-button {
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: 40px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    color: var(--background-text-color);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.line-nav-button:hover {
+    background: var(--surface-hover);
+    transform: scale(1.02);
+}
+
+.line-nav-button span {
+    font-size: 20px;
+}
+
+.line-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--background-text-color);
+    margin: 0;
+    flex: 1;
+}
+
+.song-info-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-light-color);
+    border-radius: 0.75rem;
+    margin: 0.5rem 0 1rem;
+    max-width: 30rem;
+    width: 80%;
+}
+
+.song-info-cover {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    background-image: url("https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png");
+    background-size: cover;
+    background-position: center;
+    color: transparent;
+}
+
+.song-info-text {
+    flex: 1;
+    overflow: hidden;
+}
+
+.song-info-name {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.song-info-artist {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--surface-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lines-selection {
+    padding-top: 0.5rem;
+    padding-bottom: 5rem;
+    width: 80%;
+    max-width: 30rem;
+}
+
+.select-line {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    background-color: var(--surface-light-color);
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    margin: 0 auto 1rem;
+    transition: padding 400ms var(--cubic-ease-out),
+        margin-bottom 400ms var(--cubic-ease-out),
+        font-size 400ms var(--cubic-ease-out),
+        width 400ms var(--cubic-ease-out),
+        background-color 200ms var(--cubic-ease-out),
+        scale 200ms var(--cubic-ease-out);
+}
+
+.select-line:hover {
+    cursor: pointer;
+    background-color: var(--surface-color);
+    scale: 1.05;
+}
+
+.hidden .select-line,
+.select-line.hidden {
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 0;
+    width: 0;
+}
+
+.select-line.selected {
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+}
+
+/* ========== SCREEN 4 - FINAL OPTIONS ========== */
+.final-options .screen-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.final-options header {
+    margin-bottom: 1rem;
+}
+
+.final-options .searching {
+    margin-bottom: 2rem;
+}
+
+.final-options .searching.hidden {
+    margin-bottom: 0;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    margin-top: 16px;
+    gap: 16px;
+}
+
+.nav-buttons h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+#last-go-back, #download {
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: 40px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--background-text-color);
+    flex-shrink: 0;
+}
+
+#last-go-back:hover, #download:hover {
+    background: var(--surface-hover);
+    transform: scale(1.02);
+}
+
+.color-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 0.8rem;
+    max-width: 15rem;
+    width: 80%;
+    padding: 2rem 1rem;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.hidden .color-selection {
+    padding: 0 1rem;
+}
+
+.color-selection>div {
+    width: 21%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    color: transparent;
+    transition: 150ms var(--cubic-ease-out);
+}
+
+.color-selection>div:hover {
+    cursor: pointer;
+    scale: 1.1;
+}
+
+.hidden .color-selection>div {
+    width: 0;
+}
+
+#custom-color {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--background-text-color);
+    border: 1px solid var(--background-text-color);
+}
+
+#custom-color>input {
+    height: 0;
+    width: 0;
+    padding: 0;
+    border: none;
+}
+
+#custom-color>label:hover {
+    cursor: pointer;
+}
+
+.switch-container {
+    display: flex;
+    align-items: center;
+    max-width: 15rem;
+    width: 80%;
+    padding: 0rem 1rem 1rem;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.switch-container:hover {
+    cursor: pointer;
+}
+
+.hidden .switch-container {
+    font-size: 0;
+    padding: 0;
+}
+
+.switch {
+    position: relative;
+    width: 4rem;
+    height: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--background-text-color);
+    margin-right: 1rem;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.hidden .switch {
+    height: 0;
+}
+
+.switch::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0.25rem;
+    transform: translate(0, -50%);
+    height: 1.5rem;
+    aspect-ratio: 1;
+    background-color: var(--background-text-color);
+    border-radius: 50%;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+/* PERBAIKAN: SWITCH BISA GERAK KETIKA DIKLIK */
+.switch-container.active .switch::after {
+    left: calc(100% - 1.75rem);
+}
+
+/* Juga support untuk class light-text */
+.light-text .switch::after {
+    left: calc(100% - 1.75rem);
+}
+
+/* Support untuk additional-bg */
+.additional-bg .switch::after {
+    left: calc(100% - 1.75rem);
+}
+
+.width-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0rem 1rem 1rem;
+    font-size: 0.9rem;
+    max-width: 15rem;
+    width: 80%;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.hidden .width-control {
+    font-size: 0;
+    padding: 0;
+}
+
+.width-control>div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.width-control label {
+    font-weight: 600;
+}
+
+.width-control input[type="range"] {
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    outline: none;
+    background: var(--surface-color);
+    cursor: pointer;
+}
+
+.width-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: 150ms var(--cubic-ease-out);
+}
+
+.width-control input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.width-control input[type="range"]::-moz-range-thumb {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: none;
+    transition: 150ms var(--cubic-ease-out);
+}
+
+.width-control input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}
+
+.width-control #width-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.font-selection-container {
+    display: flex;
+    align-items: center;
+    max-width: 15rem;
+    width: 80%;
+    padding: 0rem 1rem 1rem;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.font-label {
+    margin-right: 1rem;
+    min-width: 4rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+#font-lang {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--background-text-color);
+    border-radius: 0.5rem;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--background-text-color);
+    background: transparent;
+    transition: 200ms var(--cubic-ease-out);
+}
+
+/* ========== RESPONSIVE MOBILE UNTUK WIZARD ========== */
+@media (max-width: 768px) {
+    .search-form {
+        min-height: calc(100vh - 160px);
+        align-items: center;
+    }
+    
+    .main-title {
+        margin: 0 0 20px 0;
+    }
+    
+    .main-title h1 {
+        font-size: 24px;
+    }
+    
+    .search-form .screen-wrapper {
+        padding: 0 16px;
+    }
+    
+    .song-selection-wrapper {
+        padding: 0 16px;
+    }
+    
+    .select-song-header {
+        margin-bottom: 20px;
+    }
+    
+    .select-song-header .back-button {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .select-song-header .back-button span {
+        font-size: 20px;
+    }
+    
+    .select-song-header h1 {
+        font-size: 20px;
+    }
+    
+    .header-spacer {
+        width: 36px;
+    }
+    
+    .lyrics-results .screen-wrapper {
+        padding: 0 16px;
+    }
+    
+    .line-navigation {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .line-nav-button {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .line-nav-button span {
+        font-size: 16px;
+    }
+    
+    .line-title {
+        font-size: 14px;
+    }
+    
+    .song-info-display {
+        padding: 12px;
+        margin-bottom: 20px;
+        gap: 12px;
+        width: 90%;
+    }
+    
+    .song-info-cover {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .song-info-name {
+        font-size: 0.9rem;
+    }
+    
+    .song-info-artist {
+        font-size: 0.75rem;
+    }
+    
+    .lines-selection {
+        width: 90%;
+    }
+    
+    .select-line {
+        padding: 12px;
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .final-options .screen-wrapper {
+        padding: 0 16px;
+    }
+    
+    .nav-buttons {
+        margin-top: 8px;
+        margin-bottom: 20px;
+        gap: 12px;
+    }
+    
+    .nav-buttons h1 {
+        font-size: 18px;
+    }
+    
+    #last-go-back, #download {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .color-selection {
+        width: 90%;
+        max-width: 13rem;
+    }
+    
+    .switch-container {
+        width: 90%;
+        max-width: 13rem;
+    }
+    
+    .width-control {
+        width: 90%;
+        max-width: 13rem;
+    }
+    
+    .font-selection-container {
+        width: 90%;
+        max-width: 13rem;
+    }
+    }
