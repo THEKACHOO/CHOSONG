@@ -68,8 +68,8 @@ class DOMHandler {
         this.bgImage = document.querySelector('#bg-canvas-image');
         this.bgCreditText = document.querySelector('#bg-credit-text');
         this.bgDownloadBtn = document.querySelector('#bg-download-btn');
-        this.bgSizeSlider = document.querySelector('#bg-size-slider');
-        this.bgSizeLabel = document.querySelector('#bg-size-label');
+        this.bgZoomSlider = document.querySelector('#bg-zoom-slider');
+        this.bgZoomLabel = document.querySelector('#bg-zoom-label');
         this.bgUploadInput = document.querySelector('#bg-upload-input');
 
         this.setListeners();
@@ -242,12 +242,15 @@ class DOMHandler {
             });
         });
 
-        if (this.bgSizeSlider) {
-            this.bgSizeSlider.addEventListener('input', () => {
-                const val = this.bgSizeSlider.value;
-                this.bgSizeLabel.textContent = val + '%';
+        // ZOOM SLIDER - HANYA ZOOM IN/ZOOM OUT
+        // UKURAN SONG IMAGE TETAP DARI SCREEN 4
+        if (this.bgZoomSlider) {
+            this.bgZoomSlider.addEventListener('input', () => {
+                const val = this.bgZoomSlider.value;
+                this.bgZoomLabel.textContent = val + '%';
                 if (this.bgSongOverlay) {
-                    this.bgSongOverlay.style.width = val + '%';
+                    this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
+                    this.bgSongOverlay.style.width = 'auto';
                 }
             });
         }
@@ -345,6 +348,15 @@ class DOMHandler {
         document.body.style.overflow = 'hidden';
         this.updateBgOverlay();
         this.updateBgCanvas();
+        // Reset zoom ke 100%
+        if (this.bgZoomSlider) {
+            this.bgZoomSlider.value = '100';
+            this.bgZoomLabel.textContent = '100%';
+            if (this.bgSongOverlay) {
+                this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
+                this.bgSongOverlay.style.width = 'auto';
+            }
+        }
     }
 
     closeBackgroundModal() {
@@ -366,10 +378,15 @@ class DOMHandler {
             this.bgSongOverlay.innerHTML = '';
             this.bgSongOverlay.appendChild(clone);
             
-            // Set ukuran dari slider (40%-90%)
-            if (this.bgSizeSlider) {
-                const val = this.bgSizeSlider.value;
-                this.bgSongOverlay.style.width = val + '%';
+            // UKURAN SONG IMAGE TETAP DARI SCREEN 4
+            // HANYA ZOOM YANG DIATUR
+            if (this.bgZoomSlider) {
+                const val = this.bgZoomSlider.value;
+                this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
+                this.bgSongOverlay.style.width = 'auto';
+            } else {
+                this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
+                this.bgSongOverlay.style.width = 'auto';
             }
         }
     }
