@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="wizard.css">
+    <link rel="stylesheet" href="song-image.css">
+    <title>CHOSONG</title>
+</head>
+
+<body>
+    <div class="global-header">
+        <div class="header-logo">
+            <img id="header-logo-img" src="Chosong1.png" alt="Chosong Logo">
+        </div>
+        <div class="header-center">
+            <div class="chosong-brand">CHOSONG</div>
+            <div class="generator-by">by the Kachoo</div>
+        </div>
+        <div class="header-right">
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle-checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <main>
+        <!-- SCREEN 1 -->
+        <section class="lyrics-image-screen search-form" data-number="1">
+            <div class="screen-wrapper">
+                <div class="mood-logo-container">
+                    <img id="mood-logo-img" src="Chosong1.2.png" alt="Chosong Mood Logo" class="mood-logo">
+                </div>
+                <div class="main-title">
+                    <h1>What's your mood today?</h1>
+                </div>
+                <div class="input-tabs" style="display: none;">
+                    <button class="tab-button active" data-tab="search">Search</button>
+                    <button class="tab-button" data-tab="link">Paste Link</button>
+                </div>
+                <div class="tab-content active" id="search-tab">
+                    <form>
+                        <input class="surface" type="text" id="song-name" placeholder="Song name or Singer name">
+                        <button class="primary" id="search">Find the song!</button>
+                    </form>
+                </div>
+                <div class="tab-content" id="link-tab">
+                    <form>
+                        <input class="surface" type="text" id="spotify-link" placeholder="https://open.spotify.com/track/...">
+                        <button class="primary" id="load-link">Load song!</button>
+                    </form>
+                </div>
+                <div class="searching hidden"></div>
+                <div class="error hidden"></div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: Select a song -->
+        <section class="lyrics-image-screen hidden search-results" data-number="2">
+            <div class="screen-wrapper">
+                <div class="song-selection-wrapper">
+                    <div class="select-song-header">
+                        <button class="back-button" id="back-to-search">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <h1>Select a song</h1>
+                        <div class="header-spacer"></div>
+                    </div>
+                    <div class="song-selection">
+                        <div class="select-song cloneable">
+                            <img src="" alt="album-cover">
+                            <div class="name"></div>
+                            <div class="authors"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: Select lines -->
+        <section class="lyrics-image-screen hidden lyrics-results" data-number="3">
+            <div class="screen-wrapper">
+                <div class="song-info-display">
+                    <img src="" alt="album cover" class="song-info-cover">
+                    <div class="song-info-text">
+                        <div class="song-info-name"></div>
+                        <div class="song-info-artist"></div>
+                    </div>
+                </div>
+
+                <div class="line-navigation">
+                    <button class="line-nav-button" id="back-line">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <h3 class="line-title">Select a Line</h3>
+                    <button class="line-nav-button" id="next-line">
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+
+                <div class="lines-selection"></div>
+
+                <div class="searching hidden"></div>
+            </div>
+            <button class="fab hidden" id="lyrics-fab">
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </section>
+
+        <!-- SCREEN 4: Final options -->
+        <section class="lyrics-image-screen hidden final-options" data-number="4">
+            <div class="screen-wrapper">
+                <div class="nav-buttons">
+                    <button class="material-symbols-outlined" id="last-go-back">chevron_left</button>
+                    <h1>Song image</h1>
+                    <button class="material-symbols-outlined" id="download">download</button>
+                </div>
+                <div class="searching hidden"></div>
+                <div class="song-image" id="song-image-container">
+                    <div class="header">
+                        <img class="screen4-album-img" src="" alt="album-cover">
+                        <div>
+                            <div class="name" contenteditable></div>
+                            <div class="authors" contenteditable></div>
+                        </div>
+                    </div>
+                    <div class="lyrics" contenteditable="true"></div>
+                </div>
+                <div class="color-selection">
+                    <div id="custom-color">
+                        <input type="color" id="custom-color-input" value="#000000">
+                        <label class="material-symbols-outlined" for="custom-color-input">palette</label>
+                    </div>
+                </div>
+                <div class="switch-container light-text" id="light-text">
+                    <div class="switch"></div>
+                    <div>Light text</div>
+                </div>
+                <div class="switch-container additional-bg" id="additional-bg">
+                    <div class="switch"></div>
+                    <div>Background</div>
+                </div>
+                <div class="width-control">
+                    <div>
+                        <label for="width-slider">Width</label>
+                        <span id="width-value">320px</span>
+                    </div>
+                    <input type="range" id="width-slider" min="200" max="600" value="320" step="10">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <strong>The Kachoo</strong>
+                <p>Digital media company turning ideas into attention through innovative publications.</p>
+                <div class="social-links-footer">
+                    <a href="mailto:ohkachoo@gmail.com" class="social-link-footer"><i class="fas fa-envelope"></i></a>
+                    <a href="https://twitter.com/thekachoo" target="_blank" class="social-link-footer"><span class="x-logo">X</span></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <strong>Contact</strong>
+                <ul class="footer-links-list">
+                    <li><a href="https://twitter.com/TheKachoo" target="_blank">Official Account: @TheKachoo</a></li>
+                    <li><a href="https://twitter.com/HaiKachoo" target="_blank">Business Only: @HaiKachoo</a></li>
+                    <li><a href="mailto:ohkachoo@gmail.com">Email: ohkachoo@gmail.com</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <strong>Address</strong>
+                <p>Jenderal Sudirman Avenue, Lots 61–62, South Jakarta, Indonesia</p>
+            </div>
+        </div>
+        <div class="roleplay-text">
+            For Roleplay Purpose Only, made by The Kachoo in 2026.
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- JS FILES -->
+    <script src="Artist.js"></script>
+    <script src="Lyric.js"></script>
+    <script src="Song.js"></script>
+    <script src="DataFetcher.js"></script>
+    <script src="DOMHandler.js"></script>
+    <script src="index.js"></script>
+
+    <!-- THEME TOGGLE SCRIPT + LOGO UPDATER -->
+    <script>
+    (function() {
+        const checkbox = document.getElementById('theme-toggle-checkbox');
+        const headerLogo = document.getElementById('header-logo-img');
+        const moodLogo = document.getElementById('mood-logo-img');
+        
+        function updateLogos(isDark) {
+            if (isDark) {
+                // Header logo dark
+                if (headerLogo) headerLogo.src = 'Chosong2.png';
+                // Mood logo dark (di atas title)
+                if (moodLogo) moodLogo.src = 'Chosong2.1.png';
+            } else {
+                // Header logo light
+                if (headerLogo) headerLogo.src = 'Chosong1.png';
+                // Mood logo light
+                if (moodLogo) moodLogo.src = 'Chosong1.2.png';
+            }
+        }
+        
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                if (checkbox) checkbox.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (checkbox) checkbox.checked = false;
+            }
+            updateLogos(isDark);
+        }
+        
+        function getInitialTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') return true;
+            if (saved === 'light') return false;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        if (checkbox) {
+            const isDark = getInitialTheme();
+            applyTheme(isDark);
+            
+            checkbox.addEventListener('change', function() {
+                const isDark = this.checked;
+                applyTheme(isDark);
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+        } else {
+            // Fallback kalau checkbox gak ada
+            updateLogos(getInitialTheme());
+        }
+    })();
+    </script>
+</body>
+
+                            </html>
