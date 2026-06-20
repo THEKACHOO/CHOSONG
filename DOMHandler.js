@@ -66,12 +66,9 @@ class DOMHandler {
         this.bgCanvasContainer = document.querySelector('#bg-canvas-container');
         this.bgSongOverlay = document.querySelector('#bg-song-overlay');
         this.bgImage = document.querySelector('#bg-canvas-image');
-        this.bgCreditText = document.querySelector('#bg-credit-text');
         this.bgDownloadBtn = document.querySelector('#bg-download-btn');
         this.bgZoomSlider = document.querySelector('#bg-zoom-slider');
         this.bgZoomLabel = document.querySelector('#bg-zoom-label');
-        this.bgWidthSlider = document.querySelector('#bg-width-slider');
-        this.bgWidthLabel = document.querySelector('#bg-width-label');
         this.bgUploadInput = document.querySelector('#bg-upload-input');
 
         this.setListeners();
@@ -162,14 +159,7 @@ class DOMHandler {
                 if (this.bgWidthSlider && this.bgModal && this.bgModal.classList.contains('open')) {
                     this.bgWidthSlider.value = width;
                     this.bgWidthLabel.textContent = width + 'px';
-                    const overlay = this.bgSongOverlay;
-                    if (overlay) {
-                        const songImage = overlay.querySelector('.song-image');
-                        if (songImage) {
-                            songImage.style.width = width + 'px';
-                            songImage.style.maxWidth = '100%';
-                        }
-                    }
+                    this.updateBgOverlay();
                 }
             });
         }
@@ -234,7 +224,6 @@ class DOMHandler {
 
         // Background controls
         this.bgButtons = document.querySelectorAll('[data-bg]');
-        this.bgCreditButtons = document.querySelectorAll('[data-credit]');
 
         this.bgButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -244,55 +233,13 @@ class DOMHandler {
             });
         });
 
-        this.bgCreditButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.bgCreditButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const action = btn.dataset.credit;
-                if (action === 'show') {
-                    this.bgCreditText.classList.remove('hidden');
-                } else {
-                    this.bgCreditText.classList.add('hidden');
-                }
-            });
-        });
-
-        // ZOOM SLIDER - HANYA ZOOM IN/ZOOM OUT
+        // ZOOM SLIDER
         if (this.bgZoomSlider) {
             this.bgZoomSlider.addEventListener('input', () => {
                 const val = this.bgZoomSlider.value;
                 this.bgZoomLabel.textContent = val + '%';
                 if (this.bgSongOverlay) {
                     this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
-                }
-            });
-        }
-
-        // WIDTH SLIDER - SAMA DENGAN SCREEN 4
-        if (this.bgWidthSlider) {
-            this.bgWidthSlider.addEventListener('input', () => {
-                const val = this.bgWidthSlider.value;
-                this.bgWidthLabel.textContent = val + 'px';
-                
-                // Update width di song image overlay
-                const overlay = this.bgSongOverlay;
-                if (overlay) {
-                    const songImage = overlay.querySelector('.song-image');
-                    if (songImage) {
-                        songImage.style.width = val + 'px';
-                        songImage.style.maxWidth = '100%';
-                    }
-                }
-                
-                // Sync ke Screen 4
-                if (this.widthSlider) {
-                    this.widthSlider.value = val;
-                    if (this.widthValue) {
-                        this.widthValue.textContent = val + 'px';
-                    }
-                    if (this.songImage) {
-                        this.songImage.style.width = val + 'px';
-                    }
                 }
             });
         }
@@ -389,28 +336,9 @@ class DOMHandler {
         this.bgModal.classList.add('open');
         document.body.style.overflow = 'hidden';
         
-        // Update overlay
         this.updateBgOverlay();
         this.updateBgCanvas();
         
-        // Sync width dari Screen 4 ke modal
-        if (this.bgWidthSlider && this.widthSlider) {
-            const screen4Width = this.widthSlider.value;
-            this.bgWidthSlider.value = screen4Width;
-            this.bgWidthLabel.textContent = screen4Width + 'px';
-            
-            // Paksa update width di song image
-            const overlay = this.bgSongOverlay;
-            if (overlay) {
-                const songImage = overlay.querySelector('.song-image');
-                if (songImage) {
-                    songImage.style.width = screen4Width + 'px';
-                    songImage.style.maxWidth = '100%';
-                }
-            }
-        }
-        
-        // Reset zoom ke 100%
         if (this.bgZoomSlider) {
             this.bgZoomSlider.value = '100';
             this.bgZoomLabel.textContent = '100%';
@@ -437,25 +365,41 @@ class DOMHandler {
                 el.contentEditable = 'false';
             });
             
-            // ========== AMBIL WIDTH DARI SCREEN 4 ==========
+            // PASTIKAN SAMA PERSIS DENGAN SCREEN 4
             const songImage = clone.querySelector('.song-image');
             if (songImage) {
                 const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
+                // Copy semua style dari screen 4
+                const sourceSongImage = document.querySelector('#song-image-container .song-image');
+                if (sourceSongImage) {
+                    songImage.style.cssText = sourceSongImage.style.cssText;
+                }
                 songImage.style.width = screen4Width + 'px';
                 songImage.style.maxWidth = '100%';
+                songImage.style.margin = '0 auto';
+                songImage.style.position = 'relative';
+                songImage.style.display = 'block';
             }
             
             this.bgSongOverlay.innerHTML = '';
             this.bgSongOverlay.appendChild(clone);
             
-            // ZOOM
+            // Overlay style
+            this.bgSongOverlay.style.position = 'absolute';
+            this.bgSongOverlay.style.top = '50%';
+            this.bgSongOverlay.style.left = '50%';
+            this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
+            this.bgSongOverlay.style.zIndex = '2';
+            this.bgSongOverlay.style.padding = '0';
+            this.bgSongOverlay.style.background = 'transparent';
+            this.bgSongOverlay.style.width = 'auto';
+            this.bgSongOverlay.style.maxWidth = '90%';
+            this.bgSongOverlay.style.pointerEvents = 'none';
+            
             if (this.bgZoomSlider) {
                 const val = this.bgZoomSlider.value;
                 this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
-            } else {
-                this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
             }
-            this.bgSongOverlay.style.width = 'auto';
         }
     }
 
@@ -474,6 +418,7 @@ class DOMHandler {
         }
     }
 
+    // ========== DOWNLOAD BACKGROUND (800x800) ==========
     async downloadBackground() {
         if (!this.bgDownloadBtn) return;
         const btn = this.bgDownloadBtn;
@@ -481,29 +426,97 @@ class DOMHandler {
         btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Generating...';
         btn.disabled = true;
         
-        const wasHidden = this.bgCreditText.classList.contains('hidden');
-        if (wasHidden) this.bgCreditText.classList.remove('hidden');
-        
         try {
-            const canvas = await html2canvas(this.bgCanvasContainer, {
-                scale: 1.33,
+            const container = this.bgCanvasContainer;
+            const targetSize = 800;
+            
+            // Clone container untuk rendering
+            const clone = container.cloneNode(true);
+            clone.style.position = 'fixed';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.width = container.offsetWidth + 'px';
+            clone.style.height = container.offsetHeight + 'px';
+            clone.style.zIndex = '-9999';
+            clone.style.transform = 'none';
+            clone.style.borderRadius = '0';
+            clone.style.overflow = 'hidden';
+            document.body.appendChild(clone);
+            
+            // Pastikan gambar background terlihat
+            const cloneImage = clone.querySelector('#bg-canvas-image');
+            if (cloneImage) {
+                cloneImage.style.display = 'block';
+                cloneImage.style.position = 'absolute';
+                cloneImage.style.top = '0';
+                cloneImage.style.left = '0';
+                cloneImage.style.width = '100%';
+                cloneImage.style.height = '100%';
+                cloneImage.style.objectFit = 'cover';
+                cloneImage.style.zIndex = '1';
+            }
+            
+            // Pastikan overlay card sama persis
+            const cloneOverlay = clone.querySelector('.bg-song-overlay');
+            if (cloneOverlay) {
+                const overlaySongImage = cloneOverlay.querySelector('.song-image');
+                if (overlaySongImage) {
+                    const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
+                    overlaySongImage.style.width = screen4Width + 'px';
+                    overlaySongImage.style.maxWidth = '100%';
+                    overlaySongImage.style.margin = '0 auto';
+                    overlaySongImage.style.transform = 'none';
+                    overlaySongImage.style.position = 'relative';
+                    overlaySongImage.style.display = 'block';
+                    overlaySongImage.style.boxShadow = '0 4px 24px rgba(0,0,0,0.15)';
+                }
+                cloneOverlay.style.position = 'absolute';
+                cloneOverlay.style.top = '50%';
+                cloneOverlay.style.left = '50%';
+                cloneOverlay.style.transform = 'translate(-50%, -50%)';
+                cloneOverlay.style.zIndex = '2';
+                cloneOverlay.style.padding = '0';
+                cloneOverlay.style.background = 'transparent';
+                cloneOverlay.style.width = 'auto';
+                cloneOverlay.style.maxWidth = '90%';
+                cloneOverlay.style.pointerEvents = 'none';
+            }
+            
+            // Render dengan html2canvas
+            const canvas = await html2canvas(clone, {
+                scale: targetSize / container.offsetWidth,
+                width: container.offsetWidth,
+                height: container.offsetHeight,
                 backgroundColor: null,
                 useCORS: true,
                 allowTaint: false,
                 logging: false
             });
-            canvas.toBlob((blob) => {
+            
+            // Hapus clone
+            document.body.removeChild(clone);
+            
+            // Buat canvas final 800x800
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = targetSize;
+            finalCanvas.height = targetSize;
+            const ctx = finalCanvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(canvas, 0, 0, targetSize, targetSize);
+            
+            // Download
+            finalCanvas.toBlob((blob) => {
                 saveAs(blob, 'chosong-background.png');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                if (wasHidden) this.bgCreditText.classList.add('hidden');
-            });
+            }, 'image/png');
+            
         } catch (err) {
             console.error('Download failed:', err);
-            alert('Failed to download image');
+            alert('Failed to download image. Please try again.');
             btn.innerHTML = originalText;
             btn.disabled = false;
-            if (wasHidden) this.bgCreditText.classList.add('hidden');
         }
     }
 
@@ -758,124 +771,31 @@ class DOMHandler {
         }
     }
 
-    // ========== DOWNLOAD BACKGROUND ==========
-async downloadBackground() {
-    if (!this.bgDownloadBtn) return;
-    const btn = this.bgDownloadBtn;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Generating...';
-    btn.disabled = true;
-    
-    const wasHidden = this.bgCreditText.classList.contains('hidden');
-    if (wasHidden) this.bgCreditText.classList.remove('hidden');
-    
-    try {
-        // Dapatkan elemen container
-        const container = this.bgCanvasContainer;
-        
-        // Ukuran target 1200x1200
-        const targetSize = 1200;
-        const containerRect = container.getBoundingClientRect();
-        const scale = targetSize / containerRect.width;
-        
-        // Clone container untuk menghindari masalah rendering
-        const clone = container.cloneNode(true);
-        clone.style.position = 'fixed';
-        clone.style.left = '-9999px';
-        clone.style.top = '0';
-        clone.style.width = containerRect.width + 'px';
-        clone.style.height = containerRect.height + 'px';
-        clone.style.zIndex = '-9999';
-        clone.style.transform = 'none';
-        clone.style.borderRadius = '0';
-        clone.style.overflow = 'hidden';
-        document.body.appendChild(clone);
-        
-        // Pastikan image di clone terlihat
-        const cloneImage = clone.querySelector('#bg-canvas-image');
-        if (cloneImage) {
-            cloneImage.style.display = 'block';
-            cloneImage.style.position = 'absolute';
-            cloneImage.style.top = '0';
-            cloneImage.style.left = '0';
-            cloneImage.style.width = '100%';
-            cloneImage.style.height = '100%';
-            cloneImage.style.objectFit = 'cover';
-            cloneImage.style.zIndex = '1';
+    // ========== DOWNLOAD SONG IMAGE ==========
+    async downloadSongImage() {
+        this.displaySearching(DOWNLOADING);
+        const song = this.songs[this.selectedSongIndex];
+        const downloadName = `${song.artists.map(a => a.name).join(", ")} - ${song.name}.png`;
+
+        try {
+            const canvas = await html2canvas(this.songImage, {
+                scale: 2,
+                backgroundColor: null,
+                useCORS: true,
+                allowTaint: false
+            });
+            
+            canvas.toBlob((blob) => {
+                saveAs(blob, downloadName);
+                this.hideSearching();
+            });
+        } catch (error) {
+            console.error(error);
+            this.hideSearching();
+            alert("Failed to download image");
         }
-        
-        // Ambil overlay di clone
-        const cloneOverlay = clone.querySelector('.bg-song-overlay');
-        if (cloneOverlay) {
-            const overlaySongImage = cloneOverlay.querySelector('.song-image');
-            if (overlaySongImage) {
-                // Ambil width dari screen 4
-                const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
-                overlaySongImage.style.width = screen4Width + 'px';
-                overlaySongImage.style.maxWidth = '100%';
-                overlaySongImage.style.margin = '0 auto';
-                overlaySongImage.style.transform = 'none';
-                overlaySongImage.style.boxShadow = '0 4px 24px rgba(0,0,0,0.15)';
-            }
-            cloneOverlay.style.position = 'absolute';
-            cloneOverlay.style.top = '50%';
-            cloneOverlay.style.left = '50%';
-            cloneOverlay.style.transform = 'translate(-50%, -50%)';
-            cloneOverlay.style.zIndex = '2';
-            cloneOverlay.style.padding = '0';
-            cloneOverlay.style.background = 'transparent';
-            cloneOverlay.style.width = 'auto';
-            cloneOverlay.style.maxWidth = '90%';
-        }
-        
-        // Render dengan html2canvas
-        const canvas = await html2canvas(clone, {
-            scale: scale,
-            width: containerRect.width,
-            height: containerRect.height,
-            backgroundColor: null,
-            useCORS: true,
-            allowTaint: false,
-            logging: false,
-            onclone: (clonedDoc) => {
-                // Pastikan semua elemen terlihat
-                const elements = clonedDoc.querySelectorAll('*');
-                elements.forEach(el => {
-                    if (el.style.display === 'none' && el.id !== 'bg-credit-text') {
-                        el.style.display = 'block';
-                    }
-                });
-            }
-        });
-        
-        // Hapus clone
-        document.body.removeChild(clone);
-        
-        // Buat canvas baru
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = targetSize;
-        finalCanvas.height = targetSize;
-        const ctx = finalCanvas.getContext('2d');
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(canvas, 0, 0, targetSize, targetSize);
-        
-        // Download
-        finalCanvas.toBlob((blob) => {
-            saveAs(blob, 'chosong-background.png');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            if (wasHidden) this.bgCreditText.classList.add('hidden');
-        }, 'image/png');
-        
-    } catch (err) {
-        console.error('Download failed:', err);
-        alert('Failed to download image. Please try again.');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        if (wasHidden) this.bgCreditText.classList.add('hidden');
     }
-}
+
     // ========== UTILITY ==========
     throwError(html) {
         this.errorTexts.forEach(el => {
