@@ -242,18 +242,35 @@ class DOMHandler {
             });
         }
 
+        // UPLOAD BACKGROUND - CROP 1:1
         if (this.bgUploadInput) {
             this.bgUploadInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+                
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                    this.bgImage.src = ev.target.result;
-                    this.bgImage.style.display = 'block';
-                    this.bgCanvasContainer.style.backgroundColor = 'transparent';
-                    this.bgButtons.forEach(b => b.classList.remove('active'));
-                    const photoBtn = document.querySelector('.bg-upload-btn');
-                    if (photoBtn) photoBtn.classList.add('active');
+                    const img = new Image();
+                    img.onload = () => {
+                        // CROP 1:1
+                        const canvas = document.createElement('canvas');
+                        const size = Math.min(img.width, img.height);
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        const sx = (img.width - size) / 2;
+                        const sy = (img.height - size) / 2;
+                        ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+                        
+                        const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                        this.bgImage.src = croppedDataUrl;
+                        this.bgImage.style.display = 'block';
+                        this.bgCanvasContainer.style.backgroundColor = 'transparent';
+                        this.bgButtons.forEach(b => b.classList.remove('active'));
+                        const photoBtn = document.querySelector('.bg-upload-btn');
+                        if (photoBtn) photoBtn.classList.add('active');
+                    };
+                    img.src = ev.target.result;
                 };
                 reader.readAsDataURL(file);
                 this.bgUploadInput.value = '';
@@ -352,61 +369,26 @@ class DOMHandler {
         document.body.style.overflow = '';
     }
 
-    copyStyles(source, target) {
-        const computed = getComputedStyle(source);
-        for (let prop of computed) {
-            try {
-                target.style[prop] = computed.getPropertyValue(prop);
-            } catch(e) {}
-        }
-    }
-
     updateBgOverlay() {
         if (!this.bgSongOverlay) return;
         const source = document.querySelector('#song-image-container');
         if (source) {
-            const sourceSongImage = source.querySelector('.song-image');
-            if (!sourceSongImage) return;
-
-            // Clone source
             const clone = source.cloneNode(true);
-            
-            // Hapus file input
             const fileInput = clone.querySelector('.file-input');
             if (fileInput) fileInput.remove();
-            
-            // Matikan contenteditable
             clone.querySelectorAll('[contenteditable]').forEach(el => {
                 el.contentEditable = 'false';
             });
             
-            // COPY SEMUA STYLE DARI SOURCE KE CLONE
-            const cloneSongImage = clone.querySelector('.song-image');
-            if (cloneSongImage && sourceSongImage) {
-                // Copy semua computed style
-                this.copyStyles(sourceSongImage, cloneSongImage);
-                // Pastikan width sesuai
+            const songImage = clone.querySelector('.song-image');
+            if (songImage) {
                 const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
-                cloneSongImage.style.width = screen4Width + 'px';
-                cloneSongImage.style.maxWidth = '100%';
-                cloneSongImage.style.margin = '0 auto';
-                cloneSongImage.style.position = 'relative';
-                cloneSongImage.style.display = 'block';
+                songImage.style.width = screen4Width + 'px';
+                songImage.style.maxWidth = '100%';
             }
             
             this.bgSongOverlay.innerHTML = '';
             this.bgSongOverlay.appendChild(clone);
-            
-            // Atur posisi overlay
-            this.bgSongOverlay.style.position = 'absolute';
-            this.bgSongOverlay.style.top = '50%';
-            this.bgSongOverlay.style.left = '50%';
-            this.bgSongOverlay.style.zIndex = '2';
-            this.bgSongOverlay.style.padding = '0';
-            this.bgSongOverlay.style.background = 'transparent';
-            this.bgSongOverlay.style.width = 'auto';
-            this.bgSongOverlay.style.maxWidth = '90%';
-            this.bgSongOverlay.style.pointerEvents = 'none';
             
             if (this.bgZoomSlider) {
                 const val = this.bgZoomSlider.value;
@@ -414,6 +396,7 @@ class DOMHandler {
             } else {
                 this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
             }
+            this.bgSongOverlay.style.width = 'auto';
         }
     }
 
