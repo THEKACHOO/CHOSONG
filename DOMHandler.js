@@ -758,31 +758,124 @@ class DOMHandler {
         }
     }
 
-    // ========== DOWNLOAD SONG IMAGE ==========
-    async downloadSongImage() {
-        this.displaySearching(DOWNLOADING);
-        const song = this.songs[this.selectedSongIndex];
-        const downloadName = `${song.artists.map(a => a.name).join(", ")} - ${song.name}.png`;
-
-        try {
-            const canvas = await html2canvas(this.songImage, {
-                scale: 2,
-                backgroundColor: null,
-                useCORS: true,
-                allowTaint: false
-            });
-            
-            canvas.toBlob((blob) => {
-                saveAs(blob, downloadName);
-                this.hideSearching();
-            });
-        } catch (error) {
-            console.error(error);
-            this.hideSearching();
-            alert("Failed to download image");
+    // ========== DOWNLOAD BACKGROUND ==========
+async downloadBackground() {
+    if (!this.bgDownloadBtn) return;
+    const btn = this.bgDownloadBtn;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Generating...';
+    btn.disabled = true;
+    
+    const wasHidden = this.bgCreditText.classList.contains('hidden');
+    if (wasHidden) this.bgCreditText.classList.remove('hidden');
+    
+    try {
+        // Dapatkan elemen container
+        const container = this.bgCanvasContainer;
+        
+        // Ukuran target 1200x1200
+        const targetSize = 1200;
+        const containerRect = container.getBoundingClientRect();
+        const scale = targetSize / containerRect.width;
+        
+        // Clone container untuk menghindari masalah rendering
+        const clone = container.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.width = containerRect.width + 'px';
+        clone.style.height = containerRect.height + 'px';
+        clone.style.zIndex = '-9999';
+        clone.style.transform = 'none';
+        clone.style.borderRadius = '0';
+        clone.style.overflow = 'hidden';
+        document.body.appendChild(clone);
+        
+        // Pastikan image di clone terlihat
+        const cloneImage = clone.querySelector('#bg-canvas-image');
+        if (cloneImage) {
+            cloneImage.style.display = 'block';
+            cloneImage.style.position = 'absolute';
+            cloneImage.style.top = '0';
+            cloneImage.style.left = '0';
+            cloneImage.style.width = '100%';
+            cloneImage.style.height = '100%';
+            cloneImage.style.objectFit = 'cover';
+            cloneImage.style.zIndex = '1';
         }
+        
+        // Ambil overlay di clone
+        const cloneOverlay = clone.querySelector('.bg-song-overlay');
+        if (cloneOverlay) {
+            const overlaySongImage = cloneOverlay.querySelector('.song-image');
+            if (overlaySongImage) {
+                // Ambil width dari screen 4
+                const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
+                overlaySongImage.style.width = screen4Width + 'px';
+                overlaySongImage.style.maxWidth = '100%';
+                overlaySongImage.style.margin = '0 auto';
+                overlaySongImage.style.transform = 'none';
+                overlaySongImage.style.boxShadow = '0 4px 24px rgba(0,0,0,0.15)';
+            }
+            cloneOverlay.style.position = 'absolute';
+            cloneOverlay.style.top = '50%';
+            cloneOverlay.style.left = '50%';
+            cloneOverlay.style.transform = 'translate(-50%, -50%)';
+            cloneOverlay.style.zIndex = '2';
+            cloneOverlay.style.padding = '0';
+            cloneOverlay.style.background = 'transparent';
+            cloneOverlay.style.width = 'auto';
+            cloneOverlay.style.maxWidth = '90%';
+        }
+        
+        // Render dengan html2canvas
+        const canvas = await html2canvas(clone, {
+            scale: scale,
+            width: containerRect.width,
+            height: containerRect.height,
+            backgroundColor: null,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            onclone: (clonedDoc) => {
+                // Pastikan semua elemen terlihat
+                const elements = clonedDoc.querySelectorAll('*');
+                elements.forEach(el => {
+                    if (el.style.display === 'none' && el.id !== 'bg-credit-text') {
+                        el.style.display = 'block';
+                    }
+                });
+            }
+        });
+        
+        // Hapus clone
+        document.body.removeChild(clone);
+        
+        // Buat canvas baru
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = targetSize;
+        finalCanvas.height = targetSize;
+        const ctx = finalCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(canvas, 0, 0, targetSize, targetSize);
+        
+        // Download
+        finalCanvas.toBlob((blob) => {
+            saveAs(blob, 'chosong-background.png');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (wasHidden) this.bgCreditText.classList.add('hidden');
+        }, 'image/png');
+        
+    } catch (err) {
+        console.error('Download failed:', err);
+        alert('Failed to download image. Please try again.');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        if (wasHidden) this.bgCreditText.classList.add('hidden');
     }
-
+}
     // ========== UTILITY ==========
     throwError(html) {
         this.errorTexts.forEach(el => {
