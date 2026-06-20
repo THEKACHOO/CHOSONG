@@ -1,6 +1,6 @@
 # CHOSONG
 
-CHOSONG is a lyric image generator feature developed by The Kachoo for anyone who needs to create lyric-based images, especially for roleplay activities on X (formerly Twitter. This feature is designed to help users easily turn song lyrics into visually appealing images. We hope it can be useful and utilized responsibly within the roleplay community and beyond.
+CHOSONG is a lyric image generator feature developed by The Kachoo for anyone who needs to create lyric-based images, especially for roleplay activities on X (formerly Twitter). This feature is designed to help users easily turn song lyrics into visually appealing images. We hope it can be useful and utilized responsibly within the roleplay community and beyond.
 
 ## How to Use
 
