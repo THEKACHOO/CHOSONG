@@ -794,13 +794,12 @@
     height: 100%;
     z-index: 9999;
     animation: modalFadeIn 0.3s ease;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
 }
 
 .background-modal.open {
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes modalFadeIn {
@@ -832,8 +831,8 @@
     border-radius: 1.5rem;
     padding: 2rem;
     max-width: 800px;
-    width: 100%;
-    max-height: 90vh;
+    width: 95%;
+    max-height: 95vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
@@ -914,11 +913,12 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%);
     z-index: 2;
     width: auto;
     max-width: 90%;
-    border-radius: 0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
     background: transparent;
     padding: 0;
     transition: transform 0.2s ease;
@@ -933,9 +933,6 @@
     padding: 0.8rem;
     margin: 0 auto;
     pointer-events: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    position: relative;
-    display: block;
 }
 
 /* Controls */
@@ -965,7 +962,6 @@
 .bg-button-group {
     display: flex;
     gap: 0.3rem;
-    flex-wrap: wrap;
 }
 
 .bg-btn-option {
@@ -981,7 +977,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
-    min-width: 50px;
 }
 
 .bg-btn-option:hover {
@@ -1135,6 +1130,7 @@
         padding: 1rem;
         border-radius: 1rem;
         max-height: 95vh;
+        width: 100%;
         max-width: 100%;
     }
     
@@ -1151,25 +1147,6 @@
         max-width: 100%;
         aspect-ratio: 1 / 1;
         border-radius: 0.5rem;
-    }
-    
-    .bg-song-overlay .song-image {
-        width: 200px !important;
-        padding: 0.4rem;
-        border-radius: 0.5rem;
-    }
-    
-    .bg-song-overlay .song-image .header .name {
-        font-size: 0.55rem !important;
-    }
-    
-    .bg-song-overlay .song-image .header .authors {
-        font-size: 0.4rem !important;
-    }
-    
-    .bg-song-overlay .song-image .lyrics .lyric-line {
-        font-size: 0.6rem !important;
-        padding: 0.1rem 0 !important;
     }
     
     .bg-controls {
@@ -1221,7 +1198,6 @@
     }
 }
 
-/* Ukuran layar sangat kecil */
 @media (max-width: 480px) {
     .background-modal {
         padding: 4px;
@@ -1231,24 +1207,6 @@
     .background-modal-content {
         padding: 0.75rem;
         border-radius: 0.75rem;
-    }
-    
-    .bg-song-overlay .song-image {
-        width: 150px !important;
-        padding: 0.3rem;
-    }
-    
-    .bg-song-overlay .song-image .header .name {
-        font-size: 0.45rem !important;
-    }
-    
-    .bg-song-overlay .song-image .header .authors {
-        font-size: 0.35rem !important;
-    }
-    
-    .bg-song-overlay .song-image .lyrics .lyric-line {
-        font-size: 0.5rem !important;
-        padding: 0.05rem 0 !important;
     }
     
     .bg-btn-option {
