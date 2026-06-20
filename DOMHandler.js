@@ -156,9 +156,7 @@ class DOMHandler {
                     this.widthValue.textContent = `${width}px`;
                 }
                 // Sync ke modal jika terbuka
-                if (this.bgWidthSlider && this.bgModal && this.bgModal.classList.contains('open')) {
-                    this.bgWidthSlider.value = width;
-                    this.bgWidthLabel.textContent = width + 'px';
+                if (this.bgModal && this.bgModal.classList.contains('open')) {
                     this.updateBgOverlay();
                 }
             });
@@ -336,9 +334,11 @@ class DOMHandler {
         this.bgModal.classList.add('open');
         document.body.style.overflow = 'hidden';
         
+        // Update overlay - PASTIKAN SAMA PERSIS DENGAN SCREEN 4
         this.updateBgOverlay();
         this.updateBgCanvas();
         
+        // Reset zoom ke 100%
         if (this.bgZoomSlider) {
             this.bgZoomSlider.value = '100';
             this.bgZoomLabel.textContent = '100%';
@@ -358,37 +358,35 @@ class DOMHandler {
         if (!this.bgSongOverlay) return;
         const source = document.querySelector('#song-image-container');
         if (source) {
+            // Clone source - SAMA PERSIS TANPA DIUBAH
             const clone = source.cloneNode(true);
+            
+            // Hapus file input biar ga ke-click
             const fileInput = clone.querySelector('.file-input');
             if (fileInput) fileInput.remove();
+            
+            // Matikan contenteditable
             clone.querySelectorAll('[contenteditable]').forEach(el => {
                 el.contentEditable = 'false';
             });
             
-            // PASTIKAN SAMA PERSIS DENGAN SCREEN 4
+            // JANGAN UBAH STYLE APA PUN - biarkan persis seperti aslinya
+            // Hanya pastikan width sesuai screen 4
             const songImage = clone.querySelector('.song-image');
             if (songImage) {
                 const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
-                // Copy semua style dari screen 4
-                const sourceSongImage = document.querySelector('#song-image-container .song-image');
-                if (sourceSongImage) {
-                    songImage.style.cssText = sourceSongImage.style.cssText;
-                }
                 songImage.style.width = screen4Width + 'px';
                 songImage.style.maxWidth = '100%';
-                songImage.style.margin = '0 auto';
-                songImage.style.position = 'relative';
-                songImage.style.display = 'block';
+                // Biarkan style lain tetap dari aslinya
             }
             
             this.bgSongOverlay.innerHTML = '';
             this.bgSongOverlay.appendChild(clone);
             
-            // Overlay style
+            // Atur posisi overlay
             this.bgSongOverlay.style.position = 'absolute';
             this.bgSongOverlay.style.top = '50%';
             this.bgSongOverlay.style.left = '50%';
-            this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
             this.bgSongOverlay.style.zIndex = '2';
             this.bgSongOverlay.style.padding = '0';
             this.bgSongOverlay.style.background = 'transparent';
@@ -396,9 +394,12 @@ class DOMHandler {
             this.bgSongOverlay.style.maxWidth = '90%';
             this.bgSongOverlay.style.pointerEvents = 'none';
             
+            // Zoom
             if (this.bgZoomSlider) {
                 const val = this.bgZoomSlider.value;
                 this.bgSongOverlay.style.transform = `translate(-50%, -50%) scale(${val / 100})`;
+            } else {
+                this.bgSongOverlay.style.transform = 'translate(-50%, -50%) scale(1)';
             }
         }
     }
@@ -429,21 +430,22 @@ class DOMHandler {
         try {
             const container = this.bgCanvasContainer;
             const targetSize = 800;
+            const rect = container.getBoundingClientRect();
             
-            // Clone container untuk rendering
+            // Clone container - SAMA PERSIS
             const clone = container.cloneNode(true);
             clone.style.position = 'fixed';
             clone.style.left = '-9999px';
             clone.style.top = '0';
-            clone.style.width = container.offsetWidth + 'px';
-            clone.style.height = container.offsetHeight + 'px';
+            clone.style.width = rect.width + 'px';
+            clone.style.height = rect.height + 'px';
             clone.style.zIndex = '-9999';
             clone.style.transform = 'none';
             clone.style.borderRadius = '0';
             clone.style.overflow = 'hidden';
             document.body.appendChild(clone);
             
-            // Pastikan gambar background terlihat
+            // Pastikan background image terlihat
             const cloneImage = clone.querySelector('#bg-canvas-image');
             if (cloneImage) {
                 cloneImage.style.display = 'block';
@@ -456,20 +458,10 @@ class DOMHandler {
                 cloneImage.style.zIndex = '1';
             }
             
-            // Pastikan overlay card sama persis
+            // Pastikan overlay card SAMA PERSIS - JANGAN UBAH STYLE CARD
             const cloneOverlay = clone.querySelector('.bg-song-overlay');
             if (cloneOverlay) {
-                const overlaySongImage = cloneOverlay.querySelector('.song-image');
-                if (overlaySongImage) {
-                    const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
-                    overlaySongImage.style.width = screen4Width + 'px';
-                    overlaySongImage.style.maxWidth = '100%';
-                    overlaySongImage.style.margin = '0 auto';
-                    overlaySongImage.style.transform = 'none';
-                    overlaySongImage.style.position = 'relative';
-                    overlaySongImage.style.display = 'block';
-                    overlaySongImage.style.boxShadow = '0 4px 24px rgba(0,0,0,0.15)';
-                }
+                // Hanya atur posisi overlay, jangan ubah card di dalamnya
                 cloneOverlay.style.position = 'absolute';
                 cloneOverlay.style.top = '50%';
                 cloneOverlay.style.left = '50%';
@@ -480,20 +472,30 @@ class DOMHandler {
                 cloneOverlay.style.width = 'auto';
                 cloneOverlay.style.maxWidth = '90%';
                 cloneOverlay.style.pointerEvents = 'none';
+                
+                // JANGAN UBAH .song-image di dalamnya - biarkan apa adanya
+                // Hanya pastikan width sesuai screen 4
+                const songImg = cloneOverlay.querySelector('.song-image');
+                if (songImg) {
+                    const screen4Width = this.widthSlider ? this.widthSlider.value : 320;
+                    songImg.style.width = screen4Width + 'px';
+                    songImg.style.maxWidth = '100%';
+                    songImg.style.margin = '0 auto';
+                    // Biarkan semua style lain dari aslinya
+                }
             }
             
-            // Render dengan html2canvas
+            // Render
             const canvas = await html2canvas(clone, {
-                scale: targetSize / container.offsetWidth,
-                width: container.offsetWidth,
-                height: container.offsetHeight,
+                scale: targetSize / rect.width,
+                width: rect.width,
+                height: rect.height,
                 backgroundColor: null,
                 useCORS: true,
                 allowTaint: false,
                 logging: false
             });
             
-            // Hapus clone
             document.body.removeChild(clone);
             
             // Buat canvas final 800x800
@@ -505,7 +507,6 @@ class DOMHandler {
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(canvas, 0, 0, targetSize, targetSize);
             
-            // Download
             finalCanvas.toBlob((blob) => {
                 saveAs(blob, 'chosong-background.png');
                 btn.innerHTML = originalText;
