@@ -1118,7 +1118,8 @@
     transform: none;
 }
 
-/* ========== RESPONSIVE MOBILE UNTUK BACKGROUND MODAL ========== */
+/* ========== RESPONSIVE MOBILE ========== */
+/* HANYA MENGATUR TATA LETAK MODAL, TIDAK MENYENTUH CARD SONG IMAGE */
 @media (max-width: 768px) {
     .background-modal {
         padding: 8px;
@@ -1148,6 +1149,8 @@
         aspect-ratio: 1 / 1;
         border-radius: 0.5rem;
     }
+    
+    /* TIDAK MENYENTUH .bg-song-overlay .song-image */
     
     .bg-controls {
         gap: 0.6rem;
@@ -1208,6 +1211,8 @@
         padding: 0.75rem;
         border-radius: 0.75rem;
     }
+    
+    /* TIDAK MENYENTUH .bg-song-overlay .song-image */
     
     .bg-btn-option {
         font-size: 0.45rem;
