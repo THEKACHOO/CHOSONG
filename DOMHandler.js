@@ -231,7 +231,7 @@ class DOMHandler {
             });
         });
 
-        // ZOOM SLIDER
+        // ZOOM SLIDER - track value untuk download
         if (this.bgZoomSlider) {
             this.bgZoomSlider.addEventListener('input', () => {
                 const val = this.bgZoomSlider.value;
@@ -415,7 +415,7 @@ class DOMHandler {
         }
     }
 
-    // ========== DOWNLOAD BACKGROUND (800x800) ==========
+    // ========== DOWNLOAD BACKGROUND (800x800) - DENGAN ZOOM ==========
     async downloadBackground() {
         if (!this.bgDownloadBtn) return;
         const btn = this.bgDownloadBtn;
@@ -427,6 +427,9 @@ class DOMHandler {
             const container = this.bgCanvasContainer;
             const targetSize = 800;
             const rect = container.getBoundingClientRect();
+            
+            // Ambil nilai zoom saat ini
+            const zoomValue = this.bgZoomSlider ? parseFloat(this.bgZoomSlider.value) / 100 : 1;
             
             // Clone container
             const clone = container.cloneNode(true);
@@ -454,13 +457,14 @@ class DOMHandler {
                 cloneImage.style.zIndex = '1';
             }
             
-            // Pastikan overlay card SAMA PERSIS
+            // Pastikan overlay card dengan ZOOM yang sama
             const cloneOverlay = clone.querySelector('.bg-song-overlay');
             if (cloneOverlay) {
                 cloneOverlay.style.position = 'absolute';
                 cloneOverlay.style.top = '50%';
                 cloneOverlay.style.left = '50%';
-                cloneOverlay.style.transform = 'translate(-50%, -50%)';
+                // TERAPKAN ZOOM YANG SAMA
+                cloneOverlay.style.transform = `translate(-50%, -50%) scale(${zoomValue})`;
                 cloneOverlay.style.zIndex = '2';
                 cloneOverlay.style.padding = '0';
                 cloneOverlay.style.background = 'transparent';
