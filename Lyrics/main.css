@@ -1,0 +1,548 @@
+/* main.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", "Outfit", sans-serif;
+    background: var(--background-color);
+    color: var(--background-text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+:root {
+    --background-color: #FFFFFF;
+    --background-text-color: #000000;
+    --surface-bg: #FFFFFF;
+    --surface-border: #E5E5E5;
+    --surface-hover: #F5F5F5;
+    --surface-text-color: #000000;
+    --primary-color: #000000;
+    --primary-text-color: #FFFFFF;
+    --cubic-ease-out: cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    --primary-black: #000000;
+    --primary-white: #FFFFFF;
+    --accent-gray: #F5F5F7;
+    --text-gray: #6E6E73;
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --footer-bg: #000000;
+    --footer-text: #FFFFFF;
+    --footer-text-muted: rgba(255, 255, 255, 0.7);
+    --footer-border: rgba(255, 255, 255, 0.1);
+    --footer-icon-bg: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode {
+    --background-color: #000000;
+    --background-text-color: #FFFFFF;
+    --surface-bg: #000000;
+    --surface-border: #222222;
+    --surface-hover: #111111;
+    --surface-text-color: #FFFFFF;
+    --primary-color: #FFFFFF;
+    --primary-text-color: #000000;
+    --primary-black: #FFFFFF;
+    --primary-white: #000000;
+    --accent-gray: #1a1a1a;
+    --text-gray: #aaaaaa;
+    --footer-bg: #FFFFFF;
+    --footer-text: #000000;
+    --footer-text-muted: rgba(0, 0, 0, 0.7);
+    --footer-border: rgba(0, 0, 0, 0.1);
+    --footer-icon-bg: rgba(0, 0, 0, 0.1);
+}
+
+*:focus, *:focus-visible, input:focus, textarea:focus, button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+[contenteditable] {
+    outline: none;
+}
+
+.cloneable {
+    display: none !important;
+}
+
+main {
+    flex: 1;
+    margin-bottom: 60px;
+}
+
+/* ========== GLOBAL HEADER ========== */
+.global-header {
+    background: var(--surface-bg);
+    border-bottom: 2px solid var(--surface-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+}
+
+.header-logo {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.header-logo img {
+    height: 35px;
+    width: auto;
+    transition: transform 0.2s ease;
+    display: block;
+}
+
+.header-logo img:hover {
+    transform: scale(1.05);
+}
+
+.header-center {
+    flex: 1;
+    text-align: center;
+}
+
+.chosong-brand {
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--background-text-color);
+}
+
+.generator-by {
+    font-size: 11px;
+    opacity: 0.6;
+    letter-spacing: 1px;
+    color: var(--surface-text-color);
+}
+
+.header-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* ========== MOOD LOGO (DI ATAS TITLE) ========== */
+.mood-logo-container {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.mood-logo {
+    width: auto;
+    height: 180px;
+    display: inline-block;
+    object-fit: contain;
+}
+
+/* ========== TOGGLE SWITCH ========== */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.2s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.dark-mode .slider {
+    background-color: #555;
+}
+
+/* Reset style lama dan pakai style baru - UKURAN KECIL */
+#dark-mode-toggle,
+[id^="dark-mode-toggle"] {
+    all: unset !important;
+}
+
+#dark-mode-toggle {
+    position: relative !important;
+    display: inline-block !important;
+    width: 44px !important;
+    height: 24px !important;
+    cursor: pointer !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#dark-mode-toggle:hover {
+    transform: none !important;
+    background: transparent !important;
+}
+
+/* ========== SONG SELECTION (SCREEN 2) - MODIFIED ========== */
+.song-selection-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.song-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 4px 2px;
+}
+
+/* Styling untuk item lagu */
+.select-song {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px 8px;
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.select-song:hover {
+    background: var(--surface-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.select-song img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: var(--surface-border);
+}
+
+.select-song .name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--surface-text-color);
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.select-song .authors {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 4px;
+}
+
+/* Tombol See More */
+.see-more-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 20px;
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: 30px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--surface-text-color);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 4px;
+    width: fit-content;
+    align-self: center;
+}
+
+.see-more-button:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary-color);
+}
+
+.see-more-button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Class untuk menyembunyikan lagu */
+.hidden-song {
+    display: none !important;
+}
+
+/* ========== FOOTER ========== */
+footer {
+    background: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 20px 0 15px;
+    margin-top: 3px;
+    border-top: 1px solid var(--footer-border);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.footer-col strong {
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: var(--footer-text);
+    position: relative;
+}
+
+.footer-col strong::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 36px;
+    height: 2px;
+    background: var(--footer-text);
+}
+
+.footer-col p {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 12px;
+    color: var(--footer-text-muted);
+}
+
+.footer-col a {
+    color: var(--footer-text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-col a:hover {
+    color: var(--footer-text);
+    text-decoration: underline;
+}
+
+.social-links-footer {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.social-link-footer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--footer-icon-bg);
+    border-radius: 50%;
+    color: var(--footer-text);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.social-link-footer:hover {
+    background: var(--footer-text);
+    color: var(--footer-bg);
+    transform: translateY(-3px);
+}
+
+.x-logo {
+    font-weight: 900;
+    font-size: 14px;
+}
+
+.footer-links-list {
+    list-style: none;
+}
+
+.footer-links-list li {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--footer-text-muted);
+}
+
+.footer-links-list li a {
+    color: var(--footer-text-muted);
+}
+
+.footer-links-list li a:hover {
+    color: var(--footer-text);
+}
+
+.roleplay-text {
+    font-size: 12px;
+    opacity: 0.5;
+    border-top: 1px solid var(--footer-border);
+    padding-top: 20px;
+    margin-top: 0;
+    text-align: center;
+    color: var(--footer-text-muted);
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 32px;
+    padding-right: 32px;
+}
+
+/* ========== RESPONSIVE MOBILE ========== */
+@media (max-width: 768px) {
+    .global-header {
+        padding: 16px 18px;
+    }
+    
+    .header-logo img {
+        height: 28px;
+    }
+    
+    .chosong-brand {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+    
+    .generator-by {
+        font-size: 8px;
+    }
+    
+    .mood-logo {
+        height: 180px;
+    }
+    
+    main {
+        margin-bottom: 0;
+    }
+    
+    .song-selection {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+        max-height: 450px;
+    }
+    
+    .select-song .name {
+        font-size: 12px;
+    }
+    
+    .select-song .authors {
+        font-size: 10px;
+    }
+    
+    .see-more-button {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 0 12px;
+    }
+    
+    .footer-col strong {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .footer-col strong::after {
+        width: 20px;
+        height: 2px;
+        bottom: -5px;
+    }
+    
+    .footer-col p {
+        font-size: 8px;
+        line-height: 1.3;
+    }
+    
+    .footer-links-list li {
+        font-size: 8px;
+        gap: 4px;
+        margin-bottom: 2px;
+    }
+    
+    .footer-links-list li a {
+        font-size: 8px;
+    }
+    
+    .social-links-footer {
+        margin-top: 8px;
+        gap: 8px;
+    }
+    
+    .social-link-footer {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .roleplay-text {
+        font-size: 7px;
+        padding-top: 12px;
+        margin-top: 16px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+/* ========== UTILITY CLASSES ========== */
+.hidden {
+    display: none !important;
+}
+
+.material-symbols-outlined {
+    color: var(--background-text-color);
+    }

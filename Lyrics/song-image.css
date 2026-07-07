@@ -1,0 +1,207 @@
+/* song-image.css */
+
+.song-image {
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem 1rem 1rem;
+    width: var(--song-image-width, 20rem);
+    transform: scale(var(--song-image-scale, 1));
+    transform-origin: top center;
+    background-color: var(--surface-bg, #E0E0E0);
+    color: var(--background-text-color, rgba(0, 0, 0, 0.95));
+    border-radius: 1.5rem;
+    transition: 200ms var(--cubic-ease-out);
+    position: relative;
+}
+
+.light-text .song-image {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.song-image > .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.song-image > .header > .album-image-wrapper {
+    position: relative;
+    height: 2.4rem;
+    width: 2.4rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    background-image: url("https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.song-image > .header > .album-image-wrapper > img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    display: block;
+    color: transparent;
+}
+
+.song-image > .header > .album-image-wrapper > .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 0.5rem;
+}
+
+.song-image > .header > .album-image-wrapper:hover > .upload-overlay {
+    opacity: 1;
+}
+
+.song-image > .header > .album-image-wrapper > .upload-overlay > .material-symbols-outlined {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.song-image > .header > .album-image-wrapper > .file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.song-image > .header .name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.2rem;
+    padding-bottom: 0.1rem;
+    color: var(--background-text-color);
+}
+
+.song-image > .header .authors {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    color: var(--text-gray, rgba(0, 0, 0, 0.6));
+    transition: 200ms var(--cubic-ease-out);
+}
+
+.light-text .song-image > .header .authors {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* LIRIK TURUN KE BAWAH */
+.song-image > .lyrics {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.4rem;
+    padding-bottom: 0.2rem;
+    margin-top: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: var(--background-text-color);
+}
+
+.song-image > .lyrics .lyric-line {
+    display: block;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.song-image > .lyrics:not(:has(.lyric-line)) {
+    display: block;
+}
+
+/* ========== SWITCH UNTUK LIGHT TEXT & BACKGROUND ========== */
+.switch-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: 0.2s;
+}
+
+.switch::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.switch-container.active .switch {
+    background-color: var(--primary-color, #000000);
+}
+
+.switch-container.active .switch::before {
+    transform: translateX(20px);
+}
+
+.dark-mode .switch {
+    background-color: #555;
+}
+
+.dark-mode .switch-container.active .switch {
+    background-color: var(--primary-color, #ffffff);
+}
+
+/* Tombol Background baru */
+.background-button-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.background-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background-color: var(--primary-color, #000000);
+    color: var(--primary-text-color, #ffffff);
+    border: none;
+    border-radius: 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.background-button:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
+
+.background-button .material-symbols-outlined {
+    color: var(--primary-text-color, #ffffff);
+    font-size: 1.2rem;
+}
